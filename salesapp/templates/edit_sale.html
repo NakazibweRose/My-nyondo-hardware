@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Edit Sale</h3>
+    </div>
+
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Product</label>
+
+                <select name="product" class="form-select" required>
+                    {% for product in products %}
+                    <option value="{{ product.id }}" {% if sale.product.id == product.id %}selected{% endif %}>
+                        {{ product.product_name }} |
+                        {{ product.category.category_name }} |
+                        {{ product.price }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Quantity</label>
+                <input type="number" name="quantity" value="{{ sale.quantity }}" class="form-control" min="1" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Sale</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

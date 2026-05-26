@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow-sm mx-auto" style="max-width: 1000px;">
+
+    <div class="card-header bg-dark text-white">
+        <h3 class="mb-0 text-center">
+            Scheme Customer Statement
+        </h3>
+    </div>
+    <button type="submit">Back</button>
+
+    <div class="card-body">
+
+        <h4>Customer Details</h4>
+
+        <table class="table table-bordered">
+            <tr>
+                <th>Customer Name</th>
+                <td>{{ customer.full_name }}</td>
+            </tr>
+
+            <tr>
+                <th>Phone Number</th>
+                <td>{{ customer.phone_number }}</td>
+            </tr>
+
+            <tr>
+                <th>NIN Number</th>
+                <td>{{ customer.nin_number }}</td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <h4>Goods Picked</h4>
+
+        <table class="table table-bordered table-striped">
+
+            <thead class="table-dark">
+
+                <tr>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Transport</th>
+                    <th>Total</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for pickup in pickups %}
+
+                <tr>
+
+                    <td>
+                        {{ pickup.linked_sale.sale_date|date:"j M Y" }}
+                    </td>
+
+                    <td>
+                        {{ pickup.product.product_name }}
+                    </td>
+
+                    <td>
+                        {{ pickup.quantity_taken }}
+                    </td>
+
+                    <td>
+                        {{ pickup.product.unit_price }}
+                    </td>
+
+                    <td>
+                        {{ pickup.linked_sale.transport_cost }}
+                    </td>
+
+                    <td>
+                        {{ pickup.linked_sale.total_price }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6" class="text-center">
+                        No goods picked yet.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <hr>
+
+        <div class="row">
+
+            <div class="col-md-6 offset-md-6">
+
+                <table class="table table-bordered">
+
+                    <tr>
+                        <th>Total Goods</th>
+                        <td>{{ total_goods }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Total Transport</th>
+                        <td>{{ total_transport }}</td>
+                    </tr>
+
+                    <tr class="table-dark">
+                        <th>Grand Total</th>
+                        <td>{{ grand_total }}</td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-footer text-center no-print">
+
+        <button onclick="window.print()"
+                class="btn btn-dark">
+            Print Statement
+        </button>
+
+    </div>
+
+</div>
+
+{% endblock %}

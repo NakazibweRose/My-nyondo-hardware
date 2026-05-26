@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow-sm mx-auto" style="max-width: 700px;">
+    <div class="card-header bg-dark text-white text-center">
+        <h3 class="mb-0">Goods Received Note</h3>
+    </div>
+
+    <div class="card-body">
+        <h4 class="text-center">Hardware Sales System</h4>
+        <p class="text-center text-muted">Official Goods Received Note</p>
+
+        <hr>
+
+        <p><strong>GRN Number:</strong> GRN-{{ receipt.id }}</p>
+        <p><strong>Date Received:</strong> {{ receipt.date_received|date:"j F Y, H:i" }}</p>
+
+        <hr>
+
+        <table class="table table-bordered">
+            <tr>
+                <th>Product</th>
+                <td>{{ receipt.product.product_name }}</td>
+            </tr>
+
+            <tr>
+                <th>Category</th>
+                <td>{{ receipt.product.category_name }}</td>
+            </tr>
+
+            <tr>
+                <th>Supplier</th>
+                <td>{{ receipt.supplier}}</td>
+            </tr>
+
+            <tr>
+                <th>Quantity Received</th>
+                <td>{{ receipt.quantity }}</td>
+            </tr>
+
+            <tr>
+                <th>Unit Cost</th>
+                <td>{{ receipt.unit_cost }}</td>
+            </tr>
+
+            <tr>
+                <th>Total Amount Due</th>
+                <td><strong>{{ total_amount_due }}</strong></td>
+            </tr>
+
+            <tr>
+                <th>Supplier Payment Status</th>
+                <td>
+                    {% if receipt.is_paid %}
+                        Paid
+                    {% else %}
+                        Not Paid
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <p class="text-center mt-4">Goods received and recorded successfully.</p>
+    </div>
+
+    <div class="card-footer text-center no-print">
+        <button onclick="window.print()" class="btn btn-primary">Print GRN</button>
+        <a href="{% url 'stock_list' %}" class="btn btn-secondary">Back to Receipts</a>
+    </div>
+</div>
+
+{% endblock %}

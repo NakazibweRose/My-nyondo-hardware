@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-3">Stock Report</h2>
+{% comment %} <a href="{% url 'stock_report' %}" class="btn btn-dark mb-3 "> Export Excel</a> {% endcomment %}
+<a href="{% url 'stock_list' %}">Back</a>
+<table class="table table-bordered table-striped shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Product</th>
+            <th>Total Received</th>
+            <th>Total Sold</th>
+            <th>Current Stock</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in report %}
+        <tr>
+            <td>{{ item.product.product}}</td>
+            <td>{{ item.total_received }}</td>
+            <td>{{ item.total_sold }}</td>
+            <td>{{ item.current_stock }}</td>
+            <td>
+                {% if item.status == "Low Stock" %}
+                    <span class="badge bg-danger">{{ item.status }}</span>
+                {% elif item.status == "Medium Stock" %}
+                    <span class="badge bg-warning text-dark">{{ item.status }}</span>
+                {% else %}
+                    <span class="badge bg-success">{{ item.status }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No stock data found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

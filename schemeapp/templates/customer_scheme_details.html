@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class = "mb-3">
+
+    {{customer.full_name}}
+</h2>
+
+<div class = "row md-4">
+<div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5>Total Deposits</h5>
+
+                <h3>
+                    {{ total_paid|floatformat:2 }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5>Goods Picked Value</h5>
+
+                <h3>
+                    {{ total_goods_value|floatformat:2 }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5>Balance</h5>
+
+                <h3>
+                    {{ balance|floatformat:2 }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="d-flex gap-2 mb-3">
+
+    <a href="{% url 'record_scheme_payment' customer.id %}"
+       class="btn btn-dark">
+        Add Payment
+    </a>
+
+    <a href="{% url 'scheme_goods_pickup' customer.id %}"
+       class="btn btn-secondary">
+        Pickup Goods
+    </a>
+
+</div>
+
+<h4>Payment History</h4>
+
+<table class="table table-bordered table-striped shadow-sm mb-5 ">
+
+    <th class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Notes</th>
+        </tr>
+    </th>
+
+    <tbody>
+
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.payment_date|date:"j F Y, H:i" }}</td>
+
+            <td>
+                {{ payment.amount_paid|floatformat:2 }}
+            </td>
+
+            <td>{{ payment.notes }}</td>
+        </tr>
+        {% empty %}
+
+        <tr>
+            <td colspan="3" class="text-center">
+                No payments recorded.
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<h4>Goods Picked</h4>
+
+<table class="table table-bordered table-striped shadow-sm">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Linked Sale</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for pickup in pickups %}
+        <tr>
+            <td>{{ pickup.pickup_date|date:"j F Y, H:i" }}</td>
+            <td>{{ pickup.product.product_name }}</td>
+            <td>{{ pickup.quantity_taken }}</td>
+
+            <td>
+                {% if pickup.linked_sale %}
+                    <a href="{% url 'invoice' pickup.linked_sale.id %}"
+                       class="btn btn-dark btn-sm">
+                        Invoice
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+
+        <tr>
+            <td colspan="4" class="text-center">
+                No goods picked yet.
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

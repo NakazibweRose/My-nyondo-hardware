@@ -1,0 +1,162 @@
+{% extends 'auth_base.html' %} {% load static %} {% block title %}Login - NYONDO
+GENERAL HARDWARE{% endblock %} {% block extra_css %}
+<style>
+  .main-screen {
+    min-height: 90vh;
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+      url("https://images.unsplash.com/photo-1581090700227-4c4d1a3d1a9c")
+        center/cover no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+  }
+
+  .hero-content {
+    text-align: center;
+    padding: 30px;
+  }
+
+  .hero-content h1 {
+    font-size: 3rem;
+    color: #cd7f32;
+    font-weight: bold;
+  }
+
+  .hero-content p {
+    font-size: 1.2rem;
+    margin-top: 20px;
+    color: white;
+  }
+
+  .card {
+    background-color: #1a1a1a;
+    border: 1px solid #cd7f32;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .card h3 {
+    color: #cd7f32;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    color: white;
+  }
+
+  .form-control {
+    background-color: #111;
+    border: 1px solid #444;
+    color: white;
+  }
+
+  .form-control:focus {
+    border-color: #cd7f32;
+    box-shadow: 0 0 5px #cd7f32;
+    background-color: #111;
+    color: white;
+  }
+
+  .btn-bronze {
+    background-color: #cd7f32;
+    color: black;
+    font-weight: bold;
+    border: none;
+  }
+
+  .btn-bronze:hover {
+    background-color: white;
+    color: black;
+  }
+
+  .forgot-link {
+    color: #cd7f32;
+    text-decoration: none;
+  }
+
+  .forgot-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .main-screen {
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+
+    .hero-content {
+      margin-bottom: 40px;
+    }
+
+    .hero-content h1 {
+      font-size: 2rem;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<section class="main-screen">
+  <div class="container">
+    <div class="row align-items-center justify-content-center">
+      <!-- Landing Section -->
+      <div class="col-md-6 hero-content">
+        <h1>NYONDO GENERAL HARDWARE</h1>
+
+        <p>Welcome To The Smart System</p>
+      </div>
+
+      <!-- Login Section -->
+      <div class="col-md-6 d-flex justify-content-center">
+        <div class="card p-4 shadow">
+          <h3>Login</h3>
+
+          <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="username" class="form-label"> Username </label>
+
+              {{form.username}}
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label"> Password </label>
+
+              {{form.password}}
+            </div>
+
+            <button type="submit" class="btn btn-bronze w-100">Login</button>
+
+            <p class="text-center mt-3 small">
+              <span style="color: #cd7f32"> Forgot your password? </span>
+              <br />
+              <span class="text-light">
+                Please contact the system administrator for assistance.
+              </span>
+            </p>
+
+            <p class="text-center mt-2">
+              Don't have an account?
+              <a href="{% url 'register' %}" class="forgot-link"> Register </a>
+            </p>
+          </form>
+
+          {% if messages %}
+          <div class="mt-3">
+            {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

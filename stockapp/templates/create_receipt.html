@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow-sm col-6 mx-auto">
+    <div class="card-header bg-dark text-white">
+        <h3 class="mb-0">Add Stock Receipt</h3>
+    </div>
+
+    <div class="card-body ">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Product</label>
+
+                <select name="product" class="form-select" required>
+                    <option value="">Select product</option>
+
+                    {% for product in products %}
+                    <option value="{{ product.id }}">
+                        {{ product.product_name }} | Current Price: {{ product.unit_cost }}
+                    </option>
+                    {% endfor %}
+                </select> 
+
+                
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Supplier</label>
+                <input type="text" name="supplier" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Quantity</label>
+                <input type="number" name="quantity" class="form-control" min="1" required>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Unit Cost</label>
+                <input type="number" name="unit_cost" step="0.01" class="form-control" required>
+                <small class="text-muted">
+                    This will update the product's current unit cost.
+                </small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Selling Price</label>
+                <input type="number" name="price" class="form-control" required>
+                <small class="text-muted">
+                    This will update the product's current unit price.
+                </small>
+            </div> 
+
+
+            <div class="mb-3">
+                <label class="form-label">Amount Paid</label>
+                <input type="number" name="amount_paid" class="form-control" min="0" step="0.01" required>
+            </div>
+
+
+            <div class="mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" name="date" class="form-control" required>
+            </div>
+
+            <div class="form-check mb-3">
+                <input type="checkbox" name="is_paid" class="form-check-input" id="is_paid">
+                <label class="form-check-label" for="is_paid">
+                    Supplier has been paid
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-success">Save Receipt</button>
+            <a href="{% url 'create_receipt' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

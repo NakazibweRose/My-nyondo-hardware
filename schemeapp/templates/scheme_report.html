@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">Scheme Report</h2>
+
+    
+    <form method="GET" class="row mb-4">
+        <div class="col-md-4">
+            <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+        </div>
+
+        <div class="col-md-4">
+            <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+        </div>
+
+        <div class="col-md-4">
+            <button class="btn btn-dark w-100">Filter</button>
+        </div>
+    </form>
+
+    
+    <div class="row text-center mb-4">
+
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm">
+                <h5>Goods Sales</h5>
+                <h4>{{ total_goods }}</h4>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm">
+                <h5>Transport Income</h5>
+                <h4>{{ total_transport }}</h4>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm bg-dark text-white">
+                <h5>Grand Total</h5>
+                <h4>{{ grand_total }}</h4>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <table class="table table-bordered table-striped">
+
+        <thead class="table-dark">
+            <tr>
+                <th>customer_name</th>
+                <th>Date</th>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Transport</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for sale in sales %}
+            <tr>
+                <td>{{ sale.sale_date|date:"Y-m-d H:i" }}</td>
+                <td>{{ sale.product_name.product_name }}</td>
+                <td>{{ sale.quantity }}</td>
+                <td>{{ sale.product_name.unit_price }}</td>
+                <td>{{ sale.transport_cost }}</td>
+                <td>{{ sale. customer_name }}</td>
+                <td>
+                    {{ sale.product_name.unit_price|floatformat:2|add:"0" }}
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <!-- PRINT BUTTON -->
+    <div class="text-end no-print">
+        <button onclick="window.print()" class="btn btn-dark">
+            Print Report
+        </button>
+    </div>
+
+    <div>
+        <button type="submit" class="btn btn-secondary">Cancel</button>
+    </div>
+
+</div>
+
+{% endblock %}

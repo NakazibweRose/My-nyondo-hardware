@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-3">Sales Report</h2>
+
+<form method="GET" class="card card-body shadow-sm mb-4">
+    <div class="row">
+        <div class="col-md-4">
+            <label class="form-label">Start Date</label>
+            <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">End Date</label>
+            <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-dark me-2">Filter</button>
+            <a href="{% url 'sales_report' %}" class="btn btn-secondary">Reset</a>
+            <a href="{% url 'export_sales_report_excel' %}?start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}" class="btn btn-warning">Export To Excel</a>
+        </div>
+    </div>
+</form>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Total Quantity Sold</h5>
+                <h3>{{ total_quantity_sold|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Total Sales Amount</h5>
+                <h3>{{ total_sales_amount|floatformat:2 }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Selling Price</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Sale Date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for sale in sales %}
+        <tr>
+            <td>{{ sale.product_name.product_name }}</td>
+            <td>{{ sale.product_name.category_name.category_name }}</td>
+            <td>{{ sale.product_name.selling_price|floatformat:2 }}</td>
+            <td>{{ sale.quantity }}</td>
+            <td>{{ sale.total_price|floatformat:2}}</td>
+            <td>{{ sale.sale_date|date:"j F Y, H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="text-center">No sales found for this period.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

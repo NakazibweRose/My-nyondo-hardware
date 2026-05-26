@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow-sm col-md-6 mx-auto">
+
+    <div class="card-header bg-dark text-white">
+        <h3 class="mb-0">Register Scheme Customer</h3>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Full Name
+                </label>
+
+                <input type="text"
+                       name="full_name"
+                       class="form-control"
+                       value="{{ form.full_name.value|default:'' }}"
+                       required>
+
+                {% if form.full_name.errors %}
+                    <div class="text-danger">
+                        {{ form.full_name.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    NIN Number
+                </label>
+
+                <input type="text"
+                       name="nin_number"
+                       class="form-control"
+                       placeholder="CM1234567890AB"
+                       maxlength="14"
+                       minlength="14"
+                       value="{{ form.nin_number.value|default:'' }}"
+                       required>
+
+                {% if form.nin_number.errors %}
+                    <div class="text-danger">
+                        {{ form.nin_number.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Phone Number
+                </label>
+
+                <input type="text"
+                       name="phone_number"
+                       class="form-control"
+                       placeholder="0781234567"
+                       maxlength="10"
+                       minlength="10"
+                       value="{{ form.phone_number.value|default:'' }}"
+                       required>
+
+                {% if form.phone_number.errors %}
+                    <div class="text-danger">
+                        {{ form.phone_number.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Address
+                </label>
+
+                <textarea name="address"
+                          rows="3"
+                          class="form-control"
+                          required>{{ form.address.value|default:'' }}</textarea>
+
+                {% if form.address.errors %}
+                    <div class="text-danger">
+                        {{ form.address.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+            
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Occupation
+                </label>
+
+                <input type="text"
+                       name="occupation"
+                       class="form-control"
+                       value="{{ form.occupation.value|default:'' }}">
+
+                {% if form.occupation.errors %}
+                    <div class="text-danger">
+                        {{ form.occupation.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+
+            <button type="submit"
+                    class="btn btn-dark">
+                Register Customer
+            </button>
+
+            <a href="{% url 'scheme_customer_list' %}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

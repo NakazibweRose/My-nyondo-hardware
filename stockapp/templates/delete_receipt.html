@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="alert alert-danger shadow-sm">
+    <h3>Delete Stock Receipt</h3>
+
+    <p>Are you sure you want to delete this stock receipt?</p>
+
+    <p>
+        Product: <strong>{{ receipt.product }}</strong><br>
+        Supplier: <strong>{{ receipt.supplier }}</strong><br>
+        Quantity: <strong>{{ receipt.quantity }}</strong><br>
+        Unit Cost: <strong>{{ receipt.unit_cost }}</strong><br>
+        Amount_Due: <strong>{{ receipt.amount_due}}</strong>
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'delete_receipt' receipt.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card shadow-sm col-md-6 mx-auto">
+  <div class="card-header bg-dark text-white">
+    <h3 class="mb-0">Record A Sale</h3>
+  </div>
+
+  <div class="card-body">
+
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="mb-3">
+    <label class="form-label">Customer Type</label>
+
+    <select name="customer_type" class="form-control" required>
+        <option value="">Select customer type</option>
+        <option value="Walk-in">Walk-in</option>
+        <option value="Regular">Regular</option>
+        <option value="Wholesale">Wholesale</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Customer Name</label>
+    <input 
+        type="text"
+        name="customer_name"
+        class="form-control"
+        placeholder="Enter customer name"
+        required
+    >
+</div>
+
+<div class="mb-3">
+        <label class="form-label">Quantity</label>
+        <input type="number" name="quantity" class="form-control" min="1" required>
+      </div>
+
+
+<div class="mb-3">
+        <label class="form-label">Product</label>
+
+        <select name="product" class="form-select" required onchange="this.form.submit()">
+          <option value="">Select product</option>
+
+          {% for product in products %}
+            <option value="{{ product.id }}"
+              {% if selected_product and selected_product.id == product.id %}selected{% endif %}>
+              {{ product.product_name }} | {{ product.category_name.category_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Selling Price</label>
+
+        <input
+          type="text"
+          class="form-control"
+          readonly
+          value="{% if selected_product %}{{ selected_product.selling_price }}{% endif %}"
+          placeholder="Select a product"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Distance (km)</label>
+        <input type="number" name="distance" class="form-control" min="0" step="0.01">
+      </div>
+
+      <button type="submit" class="btn btn-warning">Save Sale</button>
+      <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

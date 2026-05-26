@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card shadow-sm mx-auto" style="max-width: 600px;">
+
+    <div class="card-header bg-dark text-white text-center">
+        <h3 class="mb-0">Sales Receipt</h3>
+    </div>
+
+    <div class="card-body">
+        {% comment %} <h4 class="text-center">Hardware Sales System</h4> {% endcomment %}
+        <p class="text-center text-muted">Official Receipt</p>
+
+        <hr>
+
+        <p><strong>Invoice Number:</strong> INV-{{ sale.id }}</p>
+        <p><strong>Date:</strong> {{ sale.sale_date|date:"j F Y, H:i" }}</p>
+
+        <hr>
+
+        <table class="table table-bordered">
+            <tr>
+                <th>Product</th>
+                <td>{{ sale.product_name.product_name }}</td>
+            </tr>
+
+            <tr>
+                <th>Category</th>
+                <td>{{ sale.product_name.category_name.category_name }}</td>
+            </tr>
+
+            <tr>
+                <th>Selling Price</th>
+                <td>{{ sale.product_name.selling_price }}</td>
+            </tr>
+
+            <tr>
+                <th>Quantity</th>
+                <td>{{ sale.quantity }}</td>
+            </tr>
+
+            <tr>
+                <th>Transport Note</th>
+                <td>{{ sale.transport_note }}</td>
+            </tr>
+
+            <tr>
+                <td>Transport Cost</td>
+                <td>{{ sale.transport_cost }}</td>
+            </tr>
+
+            <tr>
+                <th>Total Price</th>
+                <td><strong>{{ sale.total_price }}</strong></td>
+            </tr>
+        </table>
+
+        <p class="text-center mt-4">Thank you for your purchase.</p>
+    </div>
+
+    <div class="card-footer text-center no-print">
+        <button onclick="window.print()" class="btn btn-primary">Print Receipt</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Sales</a>
+    </div>
+
+</div>
+
+{% endblock %}
