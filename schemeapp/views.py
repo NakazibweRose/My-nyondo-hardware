@@ -22,64 +22,44 @@ def scheme_customer_list(request):
 # @role_required('Admin', 'Staff')
 def register_scheme_customer(request):
     if request.method == "POST":
-
-        full_name = request.POST.get("full_name")
-        nin_number = request.POST.get(
-            "nin_number",
-            ""
-        ).strip().upper()
-
-        phone_number = request.POST.get(
-            "phone_number",
-            ""
-        ).strip()
-
-        address = request.POST.get("address")
-        occupation = request.POST.get("occupation")
+        full_name = request.POST.get("full_name", "").strip()
+        nin_number = request.POST.get("nin_number", "").strip().upper()
+        phone_number = request.POST.get("phone_number", "").strip()
+        address = request.POST.get("address", "").strip()
+        occupation = request.POST.get("occupation", "").strip()
 
         errors = {}
 
-
         nin_pattern = r"^(CM|CF)[0-9]{10}[A-Z]{2}$"
-
-        if not re.match(nin_pattern, nin_number):
-            errors["nin_error"] = (
-                "Invalid NIN format. "
-                "Use format like CM1234567890AB"
-            )
-
         phone_pattern = r"^07[0-9]{8}$"
 
-        if not re.match(phone_pattern, phone_number):
-            errors["phone_error"] = (
-                "Invalid phone number. "
-                "Use format like 0781234567"
-            )
-
         if not full_name:
-            errors["full_name_error"] = (
-                "Full name is required"
-            )
+            errors["full_name_error"] = "Full name is required."
+
+        if not nin_number:
+            errors["nin_error"] = "NIN number is required."
+        elif not re.match(nin_pattern, nin_number):
+            errors["nin_error"] = "Invalid NIN format. Use format like CM1234567890AB."
+        elif SchemeCustomer.objects.filter(nin_number=nin_number).exists():
+            errors["nin_error"] = "A customer with this NIN already exists."
+
+        if not phone_number:
+            errors["phone_error"] = "Phone number is required."
+        elif not re.match(phone_pattern, phone_number):
+            errors["phone_error"] = "Invalid phone number. Use format like 0781234567."
 
         if not address:
-            errors["address_error"] = (
-                "Address is required"
-            )
+            errors["address_error"] = "Address is required."
 
         if not occupation:
-            errors["occupation_error"] = (
-                "Occupation is required"
-            )
+            errors["occupation_error"] = "Occupation is required."
 
         if errors:
-            return render(
-                request,
-                "register_scheme_customer.html",
-                {
-                    "errors": errors,
-                    "form_data": request.POST
-                }
-            )
+            return render(request, "register_scheme_customer.html", {
+                "errors": errors,
+                "form_data": request.POST
+            })
+
         SchemeCustomer.objects.create(
             full_name=full_name,
             nin_number=nin_number,
@@ -88,17 +68,10 @@ def register_scheme_customer(request):
             occupation=occupation,
         )
 
-        messages.success(
-            request,
-            "Scheme customer registered successfully."
-        )
-
+        messages.success(request, "Scheme customer registered successfully.")
         return redirect("scheme_customer_list")
 
-    return render(
-        request,
-        "register_scheme_customer.html"
-    )
+    return render(request, "register_scheme_customer.html")
 
 # @role_required('Admin', 'Staff', 'Cashier')
 def record_scheme_payment(request, customer_id):

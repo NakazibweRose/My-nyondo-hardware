@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Category, Product, Sales
 from django.db import IntegrityError
 from stockapp.models import Stock
-from django.db.models import Sum, F,DecimalField
+from django.db.models import Sum, F,DecimalField,ExpressionWrapper
+from decimal import Decimal
 from django.http import HttpResponse
 from openpyxl import Workbook
 from schemeapp.models import SchemeCustomer, SchemePayment
@@ -10,7 +11,10 @@ from django.db.models.functions import Coalesce
 
 # Create your views here
 def home(request):
-    sales = Sales.objects.all().order_by("-sale_date")
+    sales = Sales.objects.select_related(
+        "product_name",
+        "product_name__category_name"
+    ).order_by("-sale_date")
 
     total_sales_value = sales.aggregate(
         total=Sum("total_price")
@@ -18,7 +22,7 @@ def home(request):
 
     return render(request, "home.html", {
         "sales": sales,
-        "total_sales_value": total_sales_value
+        "total_sales_value": total_sales_value,
     })
 
 def category_list(request):
@@ -83,34 +87,31 @@ def delete_product(request, product_id):
 
 def create_sale(request):
     products = Product.objects.all()
-    selected_product = None
 
     if request.method == "POST":
-
         product_id = request.POST.get("product")
         quantity = request.POST.get("quantity")
         customer_name = request.POST.get("customer_name")
         customer_type = request.POST.get("customer_type")
         distance = request.POST.get("distance") or 0
 
-        if not product_id or not quantity:
+        if not product_id or not quantity or not customer_name or not customer_type:
             return render(request, "create_sale.html", {
                 "products": products,
-                "error": "Product and quantity are required."
+                "error": "All required fields must be filled."
             })
 
+        product = get_object_or_404(Product, id=product_id)
+
         quantity = int(quantity)
-        distance = float(distance)
+        distance = Decimal(distance)
 
-        selected_product = get_object_or_404(Product, id=product_id)
-
-        
         total_received = Stock.objects.filter(
-            product=selected_product
-        ).aggregate(total=Sum("quantity_received"))["total"] or 0
+            product=product
+        ).aggregate(total=Sum("quantity"))["total"] or 0
 
         total_sold = Sales.objects.filter(
-            product_name=selected_product
+            product_name=product
         ).aggregate(total=Sum("quantity"))["total"] or 0
 
         available_stock = total_received - total_sold
@@ -118,29 +119,24 @@ def create_sale(request):
         if quantity > available_stock:
             return render(request, "create_sale.html", {
                 "products": products,
-                "selected_product": selected_product,
-                "error": f"Not enough stock. Available: {available_stock}"
+                "error": f"Not enough stock. Available stock is {available_stock}."
             })
 
-        customer, _ = customer.objects.get_or_create(
-            full_name=customer_name,
-            defaults={"customer_type": customer_type}
-        )
-
-        base_total = selected_product.unit_price * quantity
+        base_total = product.selling_price * quantity
 
         if distance <= 10 and base_total >= 500000:
-            transport_cost = 0
+            transport_cost = Decimal("0")
             transport_note = "Free delivery"
         else:
-            transport_cost = 30000
+            transport_cost = Decimal("30000")
             transport_note = "Standard delivery"
 
         total_price = base_total + transport_cost
 
         sale = Sales.objects.create(
-            customer_name=customer,
-            product_name=selected_product,
+            customer_type=customer_type,
+            customer_name=customer_name,
+            product_name=product,
             quantity=quantity,
             total_price=total_price,
             distance=distance,
@@ -151,10 +147,8 @@ def create_sale(request):
         return redirect("invoice", sale_id=sale.id)
 
     return render(request, "create_sale.html", {
-        "products": products,
-        "selected_product": selected_product
+        "products": products
     })
-
         
 def invoice(request, sale_id):
     sale = get_object_or_404(Sales, id=sale_id)
@@ -302,9 +296,14 @@ def dashboard(request):
 
     total_products = Product.objects.count()
 
-    total_stock_value = Product.objects.aggregate(
+    total_stock_value = Stock.objects.aggregate(
         total=Coalesce(
-            Sum(F("quantity") * F("cost_price")),
+            Sum(
+                ExpressionWrapper(
+                    F("quantity") * F("unit_cost"),
+                    output_field=DecimalField()
+                )
+            ),
             0,
             output_field=DecimalField()
         )
@@ -313,12 +312,32 @@ def dashboard(request):
     total_scheme_customers = SchemeCustomer.objects.count()
 
     total_scheme_payments = SchemePayment.objects.aggregate(
-        total=Coalesce(Sum("amount"), 0, output_field=DecimalField())
+        total=Coalesce(Sum("amount_paid"), 0, output_field=DecimalField())
     )["total"]
 
-    recent_sales = Sales.objects.select_related("product_name").order_by("-sale_date")[:10]
+    recent_sales = Sales.objects.select_related(
+        "product_name"
+    ).order_by("-sale_date")[:10]
 
-    low_stock = Product.objects.filter(quantity__lte=5)
+    products = Product.objects.all()
+    low_stock = []
+
+    for product in products:
+        total_received = Stock.objects.filter(
+            product=product
+        ).aggregate(total=Coalesce(Sum("quantity"), 0))["total"]
+
+        total_sold = Sales.objects.filter(
+            product_name=product
+        ).aggregate(total=Coalesce(Sum("quantity"), 0))["total"]
+
+        available = total_received - total_sold
+
+        if available < 10:
+            low_stock.append({
+                "product": product.product_name,
+                "available": available
+            })
 
     context = {
         "total_sales": total_sales,

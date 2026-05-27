@@ -1,56 +1,76 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Sales Records</h2>
-    
+
+    <div class="d-flex gap-2">
+        <a href="{% url 'create_sale' %}" class="btn btn-success">Register Sale</a>
+        <a href="{% url 'sales_report' %}" class="btn btn-dark">Sales Report</a>
+    </div>
 </div>
-<div class="d-flex justify-content-end gap-2 mb-3">
-            <a href="{% url 'create_sale' %}" class="btn btn-success">Register Sale</a>
-            <a href="{% url 'sales_report' %}" class="btn btn-success">Sales Report</a>
-        </div>
 
-<table class="table table-bordered table-striped shadow-sm">
-    <thead class="table-dark">
-        <tr>
-            <th>Product</th>
-            <th>Category</th>
-            <th>Selling Price</th>
-            <th>Quantity</th>
-            <th>Total Price</th>
-            <th>Sale Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
+<div class="card shadow-sm">
+    <div class="card-body">
 
-    <tbody>
-        {% for sale in sales %}
-        <tr>
-            <td>{{ sale.product_name.product_name }}</td>
-            <td>{{ sale.product_name.category_name.category_name }}</td>
-            <td>{{ sale.product_name.selling_price|floatformat:2 }}</td>
-            <td>{{ sale.quantity }}</td>
-            <td>{{ sale.total_price|floatformat:2}}</td>
-            <td>{{ sale.sale_date|date:"j F Y, H:i" }}</td>
-            <td>
-                <a href="{% url 'invoice' sale.id %}" class="btn btn-dark btn-sm">Invoice</a>
-                <a href="{% url 'edit_sale' sale.id %}" class="btn btn-secondary btn-sm">Edit</a>
-                <a href="{% url 'delete_sale' sale.id %}" class="btn btn-danger btn-sm">Delete</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7" class="text-center">No sales recorded yet.</td>
-        </tr>
-        {% endfor %}
-    <tr class="table-dark">
-    <td colspan="4" class="text-center align-middle"> <strong>Total Sales</strong> </td>
-    <td><strong>{{ total_sales_value|floatformat:2 }}</strong> </td>
-    <td colspan="2"></td>
-    </tr>
-    </tbody>
-</table>
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Selling Price</th>
+                    <th>Qty</th>
+                    <th>Transport</th>
+                    <th>Total Price</th>
+                    <th>Sale Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for sale in sales %}
+                <tr>
+                    <td>{{ sale.customer_name }}</td>
+                    <td>{{ sale.get_customer_type_display }}</td>
+                    <td>{{ sale.product_name.product_name }}</td>
+                    <td>{{ sale.product_name.category_name.category_name }}</td>
+                    <td>UGX {{ sale.product_name.selling_price|floatformat:2 }}</td>
+                    <td>{{ sale.quantity }}</td>
+                    <td>UGX {{ sale.transport_cost|floatformat:2 }}</td>
+                    <td><strong>UGX {{ sale.total_price|floatformat:2 }}</strong></td>
+                    <td>{{ sale.sale_date|date:"j F Y, H:i" }}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'invoice' sale.id %}" class="btn btn-dark btn-sm">Invoice</a>
+                            <a href="{% url 'edit_sale' sale.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'delete_sale' sale.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center text-muted">
+                        No sales recorded yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+            <tfoot class="table-dark">
+                <tr>
+                    <td colspan="7" class="text-end">
+                        <strong>Total Sales</strong>
+                    </td>
+                    <td colspan="3">
+                        <strong>UGX {{ total_sales_value|floatformat:2 }}</strong>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>
 
 {% endblock %}
-

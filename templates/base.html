@@ -1,116 +1,170 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nyondo Hardware</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nyondo Hardware</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
 
-  <style>
-    :root {
-      --black: #111111;
-      --bronze: #cd7f32;
-      --white: #ffffff;
-      --light-bg: #f8f9fa;
-    }
+    <style>
+      :root {
+        --black: #111111;
+        --bronze: #cd7f32;
+        --white: #ffffff;
+        --light-bg: #f8f9fa;
+      }
 
-    body {
-      background-color: var(--light-bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+      body {
+        background-color: var(--light-bg);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-    .navbar-custom {
-      background-color: var(--black);
-    }
+      .navbar-custom {
+        background-color: var(--black);
+      }
 
-    .navbar-brand {
-      color: var(--bronze) ;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
+      .navbar-brand {
+        color: var(--bronze);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
 
-    .navbar-custom .nav-link {
-      color: var(--white);
-    }
+      .navbar-custom .nav-link {
+        color: var(--white);
+      }
 
-    .navbar-custom .nav-link i {
-      color: var(--bronze);
-      margin-right: 5px;
-    }
+      .navbar-custom .nav-link i {
+        color: var(--bronze);
+        margin-right: 5px;
+      }
 
-    .navbar-custom .nav-link:hover {
-      background-color: var(--bronze);
-      color: var(--black);
-    }
+      .navbar-custom .nav-link:hover {
+        background-color: var(--bronze);
+        color: var(--black);
+      }
 
-    .navbar-custom .nav-link:hover i {
-      color: var(--black);
-    }
+      .navbar-custom .nav-link:hover i {
+        color: var(--black);
+      }
 
-    .main-content {
-      flex: 1;
-      padding: 30px 0;
-    }
+      .main-content {
+        flex: 1;
+        padding: 30px 0;
+      }
 
-    .footer-custom {
-      background-color: var(--black);
-      color: var(--white);
-    }
+      .footer-custom {
+        background-color: var(--black);
+        color: var(--white);
+      }
 
-    .footer-custom a {
-      color: var(--bronze);
-      text-decoration: none;
-    }
+      .footer-custom a {
+        color: var(--bronze);
+        text-decoration: none;
+      }
 
-    .footer-custom a:hover {
-      color: var(--white);
-    }
-  </style>
-</head>
+      .footer-custom a:hover {
+        color: var(--white);
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand" href="#">
+          <img
+            src="{% static 'logo2.png' %}"
+            alt="Logo"
+            width="40"
+            height="40"
+          />
+          Nyondo General Hardware
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNavbar"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'dashboard' %}"
+                ><i class="bi bi-speedometer2"></i> Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'stock_list' %}"
+                ><i class="bi bi-box-seam"></i> Stock</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'home' %}"
+                ><i class="bi bi-cart"></i> Sales</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'category_list' %}"
+                ><i class="bi bi-tags-fill"></i> categories</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'product_list' %}"
+                ><i class="bi bi-bag-fill"></i> Products</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scheme_customer_list' %}"
+                ><i class="bi bi-people-fill"></i> scheme</a
+              >
+            </li>
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow">
-  <div class="container-fluid px-4">
-    <a class="navbar-brand" href="#">
-      <img src="{% static 'logo2.png' %}" alt="Logo" width="40" height="40"> Nyondo General Hardware
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="mainNavbar">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'stock_list' %}"><i class="bi bi-box-seam"></i> Stock</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="bi bi-cart"></i> Sales</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'category_list' %}"><i class="bi bi-tags-fill"></i> categories</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'product_list' %}"><i class="bi bi-bag-fill"></i> Products</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'scheme_customer_list' %}"><i class="bi bi-people-fill"></i> scheme</a></li>
-      </ul>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="nav-link border-0 bg-transparent">
+                  Logout
+                </button>
+              </form>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="main-content container text-center">
+      <h1 class="mb-4">Welcome to Nyondo General Hardware</h1>
+      <p><i>From Our Store To Your Site</i></p>
     </div>
-  </div>
-</nav>
+    {% block content %} {% endblock %}
 
-<div class="main-content container text-center">
-  <h1 class="mb-4">Welcome to Nyondo General Hardware</h1>
-  <p><i>From Our Store To Your Site</i></p>
-</div>
-{% block content %}
-{% endblock %}
+    <footer class="footer-custom py-4 mt-auto">
+      <div class="container text-center">
+        <p class="mb-0">
+          &copy; 2026
+          <span style="color: var(--bronze); font-weight: 600"
+            >Nyondo General Hardware</span
+          >. All rights reserved.
+        </p>
+      </div>
+    </footer>
 
-<footer class="footer-custom py-4 mt-auto">
-  <div class="container text-center">
-    <p class="mb-0">&copy; 2026 <span style="color: var(--bronze); font-weight:600;">Nyondo General Hardware</span>. All rights reserved.</p>
-
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-{% block scripts %}{% endblock %}
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

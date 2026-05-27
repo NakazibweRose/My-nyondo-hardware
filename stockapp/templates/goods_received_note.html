@@ -2,6 +2,27 @@
 
 {% block content %}
 
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+
+        nav, footer, .sidebar {
+            display: none !important;
+        }
+        .card {
+            max-width: 100% !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        table, th, td {
+            border: 1px solid #000 !important;
+        }
+    }
+</style>
+
 <div class="card shadow-sm mx-auto" style="max-width: 700px;">
     <div class="card-header bg-dark text-white text-center">
         <h3 class="mb-0">Goods Received Note</h3>
@@ -14,7 +35,7 @@
         <hr>
 
         <p><strong>GRN Number:</strong> GRN-{{ receipt.id }}</p>
-        <p><strong>Date Received:</strong> {{ receipt.date_received|date:"j F Y, H:i" }}</p>
+        <p><strong>Date Received:</strong> {{ receipt.date|date:"j F Y " }}</p>
 
         <hr>
 
