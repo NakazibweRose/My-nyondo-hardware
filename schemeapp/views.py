@@ -1,25 +1,20 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from salesapp.models import Product, Sales
-from .models import SchemeCustomer, SchemePayment, SchemeGoodsPickup
-from django.db.models import Sum
-from stockapp.models import Stock
-from django.contrib import messages
-from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import re
-from .validators import validate_nin,validate_phone
 
-# from stockapp.decorators import role_required, login_required_custom
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Sum
+from django.contrib import messages
 
-# Create your views here.
+from salesapp.models import Product, Sales
+from stockapp.models import Stock
+from .models import SchemeCustomer, SchemePayment, SchemeGoodsPickup
 
-# @login_required_custom
+
 def scheme_customer_list(request):
     customers = SchemeCustomer.objects.all().order_by("-date_registered")
     return render(request, "scheme_customer_list.html", {"customers": customers})
 
 
-# @role_required('Admin', 'Staff')
 def register_scheme_customer(request):
     if request.method == "POST":
         full_name = request.POST.get("full_name", "").strip()
@@ -71,39 +66,62 @@ def register_scheme_customer(request):
         messages.success(request, "Scheme customer registered successfully.")
         return redirect("scheme_customer_list")
 
-    return render(request, "register_scheme_customer.html")
+    return render(request, "register_scheme_customer.html", {
+        "errors": {},
+        "form_data": {}
+    })
 
-# @role_required('Admin', 'Staff', 'Cashier')
+
 def record_scheme_payment(request, customer_id):
     customer = get_object_or_404(SchemeCustomer, id=customer_id)
 
     if request.method == "POST":
+        try:
+            amount_paid = Decimal(request.POST.get("amount_paid", "0"))
+        except InvalidOperation:
+            messages.error(request, "Invalid payment amount.")
+            return redirect("record_scheme_payment", customer_id=customer.id)
+
+        if amount_paid <= 0:
+            messages.error(request, "Payment must be greater than zero.")
+            return redirect("record_scheme_payment", customer_id=customer.id)
+
         payment = SchemePayment.objects.create(
             customer=customer,
-            amount_paid=request.POST.get("amount_paid"),
-            notes=request.POST.get("notes"),
+            amount_paid=amount_paid,
+            notes=request.POST.get("notes", "")
         )
 
+        messages.success(request, "Payment recorded successfully.")
         return redirect("temporary_receipt", payment_id=payment.id)
 
-    return render(request, "record_scheme_payment.html", {"customer": customer})
+    return render(request, "record_scheme_payment.html", {
+        "customer": customer
+    })
 
 
-# @login_required_custom
 def temporary_receipt(request, payment_id):
     payment = get_object_or_404(SchemePayment, id=payment_id)
-    return render(request, "temporary_receipt.html", {"payment": payment})
+    return render(request, "temporary_receipt.html", {
+        "payment": payment
+    })
 
 
-# @login_required_custom
 def customer_scheme_detail(request, customer_id):
     customer = get_object_or_404(SchemeCustomer, id=customer_id)
+
     payments = SchemePayment.objects.filter(customer=customer)
-    pickups = SchemeGoodsPickup.objects.filter(customer=customer)
+    pickups = SchemeGoodsPickup.objects.filter(customer=customer).select_related(
+        "product",
+        "linked_sale"
+    )
 
     total_paid = sum(payment.amount_paid for payment in payments)
+
     total_goods_value = sum(
-        pickup.quantity_taken * pickup.product.unit_price for pickup in pickups
+        pickup.linked_sale.total_price
+        for pickup in pickups
+        if pickup.linked_sale
     )
 
     balance = total_paid - total_goods_value
@@ -118,35 +136,62 @@ def customer_scheme_detail(request, customer_id):
     })
 
 
-# @role_required('Admin', 'Staff', 'Cashier')
-
 def scheme_goods_pickup(request, customer_id):
-
-    customer = get_object_or_404(
-        SchemeCustomer,
-        id=customer_id
-    )
+    customer = get_object_or_404(SchemeCustomer, id=customer_id)
 
     products = Product.objects.all()
 
     if request.method == "POST":
-
         product = get_object_or_404(
             Product,
             id=request.POST.get("product")
         )
 
         try:
-            quantity = int(request.POST.get("quantity"))
-        except (TypeError, ValueError):
-            messages.error(request, "Invalid quantity")
+            quantity = int(request.POST.get("quantity", "0"))
+        except ValueError:
+            messages.error(request, "Invalid quantity.")
             return render(request, "scheme_goods_pickup.html", {
                 "customer": customer,
                 "products": products
             })
 
         if quantity <= 0:
-            messages.error(request, "Quantity must be greater than 0")
+            messages.error(request, "Quantity must be greater than zero.")
+            return render(request, "scheme_goods_pickup.html", {
+                "customer": customer,
+                "products": products
+            })
+
+        try:
+            distance = Decimal(request.POST.get("distance", "0") or "0")
+        except InvalidOperation:
+            messages.error(request, "Invalid distance.")
+            return render(request, "scheme_goods_pickup.html", {
+                "customer": customer,
+                "products": products
+            })
+
+        total_received = Stock.objects.filter(
+            product=product
+        ).aggregate(
+            total=Sum("quantity")
+        )["total"] or 0
+
+        total_sold = Sales.objects.filter(
+            customer_name = customer,
+            product_name=product
+        ).aggregate(
+            total=Sum("quantity")
+        )["total"] or 0
+
+        available_stock = total_received - total_sold
+
+        if quantity > available_stock:
+            messages.error(
+                request,
+                f"Not enough stock. Available stock is {available_stock}."
+            )
             return render(request, "scheme_goods_pickup.html", {
                 "customer": customer,
                 "products": products
@@ -154,8 +199,6 @@ def scheme_goods_pickup(request, customer_id):
 
         selling_price = Decimal(str(product.unit_price))
         base_total = selling_price * quantity
-
-        distance = Decimal(request.POST.get("distance") or "0")
 
         if distance <= 10 and base_total >= Decimal("500000"):
             transport_cost = Decimal("0")
@@ -190,19 +233,19 @@ def scheme_goods_pickup(request, customer_id):
         "products": products
     })
 
+
 def scheme_report(request):
     sales = Sales.objects.all()
 
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
 
-   
     if start_date and end_date:
         sales = sales.filter(sale_date__range=[start_date, end_date])
 
-
     total_goods = sum(
-        s.product_name.unit_price * s.quantity for s in sales
+        sale.product_name.unit_price * sale.quantity
+        for sale in sales
     )
 
     total_transport = sales.aggregate(
@@ -211,50 +254,39 @@ def scheme_report(request):
 
     grand_total = total_goods + total_transport
 
-    context = {
+    return render(request, "scheme_report.html", {
         "sales": sales,
         "total_goods": total_goods,
         "total_transport": total_transport,
         "grand_total": grand_total,
         "start_date": start_date,
         "end_date": end_date,
-    }
+    })
 
-    return render(request, "scheme_report.html", context)
 
 def scheme_statement(request, customer_id):
-
-    customer = get_object_or_404(
-        SchemeCustomer,
-        id = customer_id
-    )
+    customer = get_object_or_404(SchemeCustomer, id=customer_id)
 
     pickups = SchemeGoodsPickup.objects.filter(
         customer=customer
     ).select_related("linked_sale", "product")
 
-    total_goods = 0
-    total_transport = 0
+    total_goods = Decimal("0")
+    total_transport = Decimal("0")
 
     for pickup in pickups:
         sale = pickup.linked_sale
 
         if sale:
-            total_goods += sale.total_price + sale.transport_cost
+            total_goods += sale.total_price - sale.transport_cost
             total_transport += sale.transport_cost
 
     grand_total = total_goods + total_transport
 
-    context = {
+    return render(request, "scheme_statement.html", {
         "customer": customer,
         "pickups": pickups,
         "total_goods": total_goods,
         "total_transport": total_transport,
         "grand_total": grand_total,
-    }
-
-    return render(
-        request,
-        "scheme_statement.html",
-        context
-    )
+    })

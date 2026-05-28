@@ -2,8 +2,8 @@
 
 {% block content %}
 
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white">
+<div class="card shadow-sm col-6 mx-auto">
+    <div class="card-header bg-dark text-white ">
         <h3 class="mb-0">Edit Sale</h3>
     </div>
 
@@ -30,7 +30,7 @@
                 <input type="number" name="quantity" value="{{ sale.quantity }}" class="form-control" min="1" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">Update Sale</button>
+            <button type="submit" class="btn btn-warning">Update Sale</button>
             <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>

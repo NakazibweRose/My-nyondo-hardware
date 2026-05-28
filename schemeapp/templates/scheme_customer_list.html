@@ -1,77 +1,74 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
+<div class="container mt-4">
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Salary Scheme Customers</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Scheme Customers</h3>
+        <a href="{% url 'register_scheme_customer' %}" class="btn btn-primary">
+            Add Scheme Customer
+        </a>
+    </div>
 
-    <a href="{% url 'register_scheme_customer' %}"
-       class="btn btn-dark">
-        Register Customer
-    </a>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
-     <a href="{% url 'scheme_report' %}"
-       class="btn btn-dark">
-        Scheme Report
-    </a>
+    <div class="card shadow-sm">
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Full Name</th>
+                        <th>NIN</th>
+                        <th>Phone</th>
+                        <th>Occupation</th>
+                        <th>Date Registered</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>{{ customer.full_name }}</td>
+                        <td>{{ customer.nin_number }}</td>
+                        <td>{{ customer.phone_number }}</td>
+                        <td>{{ customer.occupation }}</td>
+                        <td>{{ customer.date_registered }}</td>
+                        <td>
+                            <a href="{% url 'customer_scheme_detail' customer.id %}" class="btn btn-sm btn-info">
+                                Details
+                            </a>
+
+                            <a href="{% url 'record_scheme_payment' customer.id %}" class="btn btn-sm btn-success">
+                                Payment
+                            </a>
+
+                            <a href="{% url 'scheme_goods_pickup' customer.id %}" class="btn btn-sm btn-warning">
+                                Pickup
+                            </a>
+
+                            <a href="{% url 'scheme_statement' customer.id %}" class="btn btn-sm btn-secondary">
+                                Statement
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No scheme customers found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
 
 </div>
-
-<table class="table table-bordered table-striped shadow-sm">
-    <thead class="table-dark">
-        <tr>
-            <th>Customer Name</th>
-            <th>NIN</th>
-            <th>Phone</th>
-            <th>Employer</th>
-            <th>Date Registered</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-
-    <tbody>
-
-        {% for customer in customers %}
-        <tr>
-            <td>{{ customer.full_name }}</td>
-            <td>{{ customer.nin_number }}</td>
-            <td>{{ customer.phone_number }}</td>
-            <td>{{ customer.employer_name }}</td>
-            <td>{{ customer.date_registered|date:"j F Y" }}</td>
-
-            <td>
-                <a href="{% url 'scheme_statement' customer.id %}"
-                   class="btn btn-dark">
-                    View Statement
-                </a>
-                
-                <a href="{% url 'customer_scheme_detail' customer.id %}"
-                   class="btn btn-dark btn-sm">
-                    View
-                </a>
-
-                <a href="{% url 'record_scheme_payment' customer.id %}"
-                   class="btn btn-secondary btn-sm">
-                    Payment
-                </a>
-
-                <a href="{% url 'scheme_goods_pickup' customer.id %}"
-                   class="btn btn-warning btn-sm">
-                    Pickup Goods
-                </a>
-            </td>
-        </tr>
-        {% empty %}
-
-        <tr>
-            <td colspan="6" class="text-center">
-                No scheme customers found.
-            </td>
-        </tr>
-
-        {% endfor %}
-
-    </tbody>
-</table>
-
 {% endblock %}

@@ -1,64 +1,77 @@
-{% extends 'auth_base.html' %} {% load static %} {% block title %}Login - NYONDO
-GENERAL HARDWARE{% endblock %} {% block extra_css %}
-<style>
-  .main-screen {
-    min-height: 90vh;
-    background:
-      linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-      url("https://images.unsplash.com/photo-1581090700227-4c4d1a3d1a9c")
-        center/cover no-repeat;
+{% extends 'auth_base.html' %}
+{% load static %}
 
+{% block title %}Login - NYONDO GENERAL HARDWARE{% endblock %}
+
+{% block extra_css %}
+<style>
+  .login-screen {
+    min-height: 85vh;
+    background: linear-gradient(135deg, #050505, #1a1a1a);
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 30px;
   }
 
-  .hero-content {
-    text-align: center;
-    padding: 30px;
-  }
-
-  .hero-content h1 {
-    font-size: 3rem;
-    color: #cd7f32;
-    font-weight: bold;
-  }
-
-  .hero-content p {
-    font-size: 1.2rem;
-    margin-top: 20px;
-    color: white;
-  }
-
-  .card {
-    background-color: #1a1a1a;
+  .login-card {
+    background-color: #111;
     border: 1px solid #cd7f32;
-    border-radius: 8px;
+    border-radius: 18px;
     width: 100%;
-    max-width: 350px;
+    max-width: 400px;
+    padding: 35px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
   }
 
-  .card h3 {
-    color: #cd7f32;
+  .logo-wrap {
     text-align: center;
     margin-bottom: 20px;
   }
 
+  .login-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    margin-bottom: 12px;
+  }
+
+  .project-title {
+    color: #cd7f32;
+    font-weight: 800;
+    font-size: 1.25rem;
+    text-align: center;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+
+  .project-subtitle {
+    color: #ddd;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+  }
+
   .form-label {
-    color: white;
+    color: #f5f5f5;
+    font-weight: 500;
   }
 
   .form-control {
-    background-color: #111;
+    background-color: #050505;
     border: 1px solid #444;
     color: white;
+    border-radius: 10px;
+    padding: 12px 15px;
+    width:100%;
+    height:50px;
+
   }
 
   .form-control:focus {
     border-color: #cd7f32;
-    box-shadow: 0 0 5px #cd7f32;
-    background-color: #111;
+    box-shadow: 0 0 0 0.15rem rgba(205, 127, 50, 0.25);
+    background-color: #050505;
     color: white;
   }
 
@@ -67,117 +80,116 @@ GENERAL HARDWARE{% endblock %} {% block extra_css %}
     color: black;
     font-weight: bold;
     border: none;
+    border-radius: 10px;
+    padding: 11px;
   }
 
   .btn-bronze:hover {
-    background-color: white;
+    background-color: #ffffff;
     color: black;
   }
 
-  .forgot-link {
+  .forgot-text {
     color: #cd7f32;
-    text-decoration: none;
+    font-size: 0.9rem;
   }
 
-  .forgot-link:hover {
+  .admin-help-text {
+    color: #ddd;
+    font-size: 0.85rem;
+  }
+
+  .register-link {
+    color: #cd7f32;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .register-link:hover {
     text-decoration: underline;
   }
 
-  @media (max-width: 768px) {
-    .main-screen {
-      padding-top: 60px;
-      padding-bottom: 60px;
-    }
+  .login-card form{
+    width:100%;
+  }
 
-    .hero-content {
-      margin-bottom: 40px;
-    }
+  .login-card .mb-3{
+    width:100%;
+  }
 
-    .hero-content h1 {
-      font-size: 2rem;
-    }
+  .login-card input{
+    width:100%;
   }
 </style>
-{% endblock %} {% block content %}
+{% endblock %}
 
-<section class="main-screen">
-  <div class="container">
-    <div class="row align-items-center justify-content-center">
-      <!-- Landing Section -->
-      <div class="col-md-6 hero-content">
-        <h1>NYONDO GENERAL HARDWARE</h1>
+{% block content %}
 
-        <p>Welcome To The Smart System</p>
+<section class="login-screen">
+
+  <div class="login-card">
+
+    <div class="logo-wrap">
+      <img src="{% static 'images/logo.png' %}" alt="Nyondo Hardware Logo" class="login-logo">
+
+      <div class="project-title">
+        NYONDO GENERAL HARDWARE
       </div>
 
-      <!-- Login Section -->
-      <div class="col-md-6 d-flex justify-content-center">
-        <div class="card p-4 shadow">
-          <h3>Login</h3>
-
-          <form method="POST">
-            {% csrf_token %} {% if form.errors %}
-
-            <div
-              class="alert alert-danger alert-dismissible fade show"
-              role="alert"
-            >
-              Invalid username or password.
-
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-              ></button>
-            </div>
-
-            {% endif %} {% if messages %} {% for message in messages %}
-
-            <div
-              class="alert alert-success alert-dismissible fade show"
-              role="alert"
-            >
-              {{ message }}
-
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-              ></button>
-            </div>
-
-            {% endfor %} {% endif %}
-
-            <label for="username" class="form-label"> Username </label>
-            <div class="mb-3">
-        
-              {{form.username}}
-            </div>
-
-            <label for="password" class="form-label"> Password </label>
-            <div class="mb-3">
-              {{form.password}}
-            </div>
-
-            <button type="submit" class="btn btn-bronze w-100">Login</button>
-
-            <p class="text-center mt-3 small">
-              <span style="color: #cd7f32"> Forgot your password? </span>
-              <br />
-              <span class="text-light">
-                Please contact the system administrator for assistance.
-              </span>
-            </p>
-
-            <p class="text-center mt-2">
-              Don't have an account?
-              <a href="{% url 'register' %}" class="forgot-link"> Register </a>
-            </p>
-          </form>
-        </div>
+      <div class="project-subtitle">
+        Management System Login
       </div>
     </div>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          Invalid username or password.
+        </div>
+      {% endif %}
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <label for="username" class="form-label">Username</label>
+      <div class="mb-3">
+        {{ form.username }}
+      </div>
+
+      <label for="password" class="form-label">Password</label>
+      <div class="mb-3">
+        
+        {{ form.password }}
+      </div>
+
+      <button type="submit" class="btn btn-bronze w-100">
+        Login
+      </button>
+
+      <p class="text-center mt-3 mb-1">
+        <span class="forgot-text">Forgot your password?</span>
+        <br>
+        <span class="admin-help-text">
+          Please contact the system administrator for assistance.
+        </span>
+      </p>
+
+      <p class="text-center mt-3 mb-0 text-light">
+        Don't have an account?
+        <a href="{% url 'register' %}" class="register-link">Register</a>
+      </p>
+
+    </form>
+
   </div>
+
 </section>
 
 {% endblock %}
