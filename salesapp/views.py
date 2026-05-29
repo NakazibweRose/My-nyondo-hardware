@@ -8,6 +8,8 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from schemeapp.models import SchemeCustomer, SchemePayment
 from django.db.models.functions import Coalesce
+from accounts.decorators import admin_required
+from django.contrib.auth.decorators import login_required
 
 # Create your views here
 def home(request):
@@ -176,6 +178,8 @@ def edit_sale(request, sale_id):
     })
 
 
+@login_required
+@admin_required
 def delete_sale(request, sale_id):
     sale = get_object_or_404(Sales, id=sale_id)
 

@@ -3,6 +3,7 @@ from django.db.models import Sum
 from .models import Stock
 from salesapp.models import Product, Sales
 from decimal import Decimal
+from django.contrib import messages
 
 # Stock list
 def stock_list(request):
@@ -20,6 +21,14 @@ def create_receipt(request):
         selling_price = Decimal(request.POST.get("price") or 0)
         quantity = int(request.POST.get("quantity") or 0)
         amount_paid = Decimal(request.POST.get("amount_paid") or 0)
+
+
+        if quantity <= 0:
+           
+            return render(request, "create_receipt.html", {
+                "products": products,
+                "error": f"Quantity must be greater than zero ."
+            })
 
         receipt = Stock.objects.create(
             product=product,

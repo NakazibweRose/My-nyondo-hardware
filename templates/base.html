@@ -103,28 +103,25 @@
         <div class="collapse navbar-collapse" id="mainNavbar">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-            {% if user.is_superuser %}
-            {% endif %}
+            {% if user.groups.all.0.name == 'Sales Manager' or user.is_superuser %}
+
+            
             <li class="nav-item">
               <a class="nav-link" href="{% url 'home' %}"
                 ><i class="bi bi-cart"></i> Sales</a
               >
             </li>
+            {% endif %}
 
             {% if user.is_superuser %}
-            {% endif %}
+            
             <li class="nav-item">
               <a class="nav-link" href="{% url 'stock_list' %}"
                 ><i class="bi bi-box-seam"></i> Stock</a
               >
             </li>
-
-            {% if user.is_superuser %}
             {% endif %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'stock_list' %}"
-                >
-            </li>
+
             
             {% if user.is_superuser %}
               <a class="nav-link" href="{% url 'dashboard' %}"
