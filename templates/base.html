@@ -84,7 +84,7 @@
       <div class="container-fluid px-4">
         <a class="navbar-brand" href="#">
           <img
-            src="{% static 'logo2.png' %}"
+            src="{% static 'true.png' %}"
             alt="Logo"
             width="40"
             height="40"
@@ -99,23 +99,40 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="mainNavbar">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'dashboard' %}"
-                ><i class="bi bi-speedometer2"></i> Dashboard</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'stock_list' %}"
-                ><i class="bi bi-box-seam"></i> Stock</a
-              >
-            </li>
+            {% if user.is_superuser %}
+            {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'home' %}"
                 ><i class="bi bi-cart"></i> Sales</a
               >
             </li>
+
+            {% if user.is_superuser %}
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'stock_list' %}"
+                ><i class="bi bi-box-seam"></i> Stock</a
+              >
+            </li>
+
+            {% if user.is_superuser %}
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'stock_list' %}"
+                >
+            </li>
+            
+            {% if user.is_superuser %}
+              <a class="nav-link" href="{% url 'dashboard' %}"
+                ><i class="bi bi-speedometer2"></i> Dashboard</a
+              >
+            </li>
+            
+            
             <li class="nav-item">
               <a class="nav-link" href="{% url 'category_list' %}"
                 ><i class="bi bi-tags-fill"></i> categories</a
@@ -131,6 +148,7 @@
                 ><i class="bi bi-people-fill"></i> scheme</a
               >
             </li>
+            {% endif %}
 
             {% if user.is_authenticated %}
             <li class="nav-item">

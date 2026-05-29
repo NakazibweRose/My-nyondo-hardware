@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}NYONDO GENERAL HARDWARE{% endblock %}</title>
 
-    <!-- Bootstrap -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -20,7 +19,7 @@
         margin: 0;
       }
 
-      /* Navbar */
+    
       .navbar {
         background-color: black;
         border-bottom: 1px solid #cd7f32;
@@ -68,7 +67,7 @@
   </head>
 
   <body>
-    <!-- Navbar -->
+  
     <nav class="navbar navbar-expand-lg navbar-dark px-4">
       <div class="container-fluid">
         <a class="navbar-brand" href="#"> NYONDO HARDWARE </a>
@@ -115,15 +114,15 @@
       </div>
     </nav>
 
-    <!-- Page Content -->
+
     {% block content %} {% endblock %}
 
-    <!-- Footer -->
+
     <footer class="footer">
       <p>&copy; 2026 NYONDO GENERAL HARDWARE. All rights reserved.</p>
     </footer>
 
-    <!-- Bootstrap JS -->
+  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block extra_js %}{% endblock %}

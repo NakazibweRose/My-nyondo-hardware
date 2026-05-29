@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="card shadow-sm col-6 mx-auto p-2">
+    <div class="card-header bg-dark text-white ">
     <h3>Edit Stock</h3>
+    </div>
 
     <form method="POST">
         {% csrf_token %}
@@ -42,8 +44,9 @@
             <label class="form-check-label">Paid</label>
         </div>
 
-        <button type="submit" class="btn btn-primary">Update Stock</button>
-        <a href="{% url 'stock_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-dark">Update Stock</button>
+        <a href="{% url 'stock_list' %}" class="btn btn-warning">Cancel</a>
     </form>
+
 </div>
 {% endblock %}

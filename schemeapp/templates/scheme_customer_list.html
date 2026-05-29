@@ -5,7 +5,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>Scheme Customers</h3>
-        <a href="{% url 'register_scheme_customer' %}" class="btn btn-primary">
+        <a href="{% url 'register_scheme_customer' %}" class="btn btn-dark">
             Add Scheme Customer
         </a>
     </div>
@@ -42,11 +42,11 @@
                         <td>{{ customer.occupation }}</td>
                         <td>{{ customer.date_registered }}</td>
                         <td>
-                            <a href="{% url 'customer_scheme_detail' customer.id %}" class="btn btn-sm btn-info">
+                            <a href="{% url 'customer_scheme_detail' customer.id %}" class="btn btn-sm btn-warning">
                                 Details
                             </a>
 
-                            <a href="{% url 'record_scheme_payment' customer.id %}" class="btn btn-sm btn-success">
+                            <a href="{% url 'record_scheme_payment' customer.id %}" class="btn btn-sm btn-dark">
                                 Payment
                             </a>
 
@@ -54,7 +54,7 @@
                                 Pickup
                             </a>
 
-                            <a href="{% url 'scheme_statement' customer.id %}" class="btn btn-sm btn-secondary">
+                            <a href="{% url 'scheme_statement' customer.id %}" class="btn btn-sm btn-dark">
                                 Statement
                             </a>
                         </td>

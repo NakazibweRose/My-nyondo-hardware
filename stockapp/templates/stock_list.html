@@ -7,8 +7,8 @@
 </div>
 
 <div class="d-flex justify-content-end gap-2 mb-3">
-            <a href="{% url 'create_receipt' %}" class="btn btn-success">Record Stock Received</a>
-            <a href="{% url 'stock_report' %}" class="btn btn-success">Stock Report</a>
+            <a href="{% url 'create_receipt' %}" class="btn btn-dark">Record Stock Received</a>
+            <a href="{% url 'stock_report' %}" class="btn btn-warning">Stock Report</a>
         </div>
 
 <table class="table table-bordered table-striped shadow-sm">
@@ -41,16 +41,16 @@
 
             <td>
                 {% if stock.is_paid %}
-                    <span class="badge bg-success">Paid</span>
+                    <span class="badge bg-warning">Paid</span>
                 {% else %}
-                    <span class="badge bg-danger">Not Paid</span>
+                    <span class="badge bg-dark">Not Paid</span>
                 {% endif %}
             </td>
             <td>{{ stock.date }}</td>
             <td>
                 <a href="{% url 'goods_received_note' stock.id %}" class="btn btn-dark btn-sm">GRN</a>
-                <a href="{% url 'stock_edit' stock.id %}" class="btn btn-primary btn-sm">Edit</a>
-                <a href="{% url 'delete_receipt' stock.id %}" class="btn btn-danger btn-sm">Delete</a>
+                <a href="{% url 'stock_edit' stock.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'delete_receipt' stock.id %}" class="btn btn-dark btn-sm">Delete</a>
             </td>
         </tr>
         {% empty %}
