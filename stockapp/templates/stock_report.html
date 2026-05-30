@@ -4,7 +4,7 @@
 
 <h2 class="mb-3">Stock Report</h2>
 {% comment %} <a href="{% url 'stock_report' %}" class="btn btn-dark mb-3 "> Export Excel</a> {% endcomment %}
-<a href="{% url 'stock_list' %}">Back</a>
+<a href="{% url 'stock_list' %}" class="btn btn-warning btn-sm px-2 col-1">Back</a>
 <table class="table table-bordered table-striped shadow-sm">
     <thead class="table-dark">
         <tr>
@@ -25,11 +25,11 @@
             <td>{{ item.current_stock }}</td>
             <td>
                 {% if item.status == "Low Stock" %}
-                    <span class="badge bg-danger">{{ item.status }}</span>
+                    <span class="badge bg-warning">{{ item.status }}</span>
                 {% elif item.status == "Medium Stock" %}
                     <span class="badge bg-warning text-dark">{{ item.status }}</span>
                 {% else %}
-                    <span class="badge bg-success">{{ item.status }}</span>
+                    <span class="badge bg-dark">{{ item.status }}</span>
                 {% endif %}
             </td>
         </tr>

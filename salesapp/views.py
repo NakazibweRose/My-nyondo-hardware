@@ -87,6 +87,10 @@ def delete_product(request, product_id):
         "product": product
     })
 
+from decimal import Decimal
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Sum
+
 def create_sale(request):
     products = Product.objects.all()
 
@@ -96,6 +100,7 @@ def create_sale(request):
         customer_name = request.POST.get("customer_name")
         customer_type = request.POST.get("customer_type")
         distance = request.POST.get("distance") or 0
+        transport_required = request.POST.get("transport_required") == "on"
 
         if not product_id or not quantity or not customer_name or not customer_type:
             return render(request, "create_sale.html", {
@@ -126,12 +131,16 @@ def create_sale(request):
 
         base_total = product.selling_price * quantity
 
-        if distance <= 10 and base_total >= 500000:
-            transport_cost = Decimal("0")
-            transport_note = "Free delivery"
-        else:
-            transport_cost = Decimal("30000")
-            transport_note = "Standard delivery"
+        transport_cost = Decimal("0")
+        transport_note = "No transport required"
+
+        if transport_required:
+            if distance <= Decimal("10") and base_total >= Decimal("500000"):
+                transport_cost = Decimal("0")
+                transport_note = "Free delivery"
+            else:
+                transport_cost = Decimal("30000")
+                transport_note = "Standard delivery"
 
         total_price = base_total + transport_cost
 
@@ -141,6 +150,7 @@ def create_sale(request):
             product_name=product,
             quantity=quantity,
             total_price=total_price,
+            transport_required=transport_required,
             distance=distance,
             transport_cost=transport_cost,
             transport_note=transport_note

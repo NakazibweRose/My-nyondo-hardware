@@ -22,6 +22,7 @@
                     <th>Category</th>
                     <th>Selling Price</th>
                     <th>Qty</th>
+                    <th>transport_required</th>
                     <th>Transport</th>
                     <th>Total Price</th>
                     <th>Sale Date</th>
@@ -38,6 +39,14 @@
                     <td>{{ sale.product_name.category_name.category_name }}</td>
                     <td>UGX {{ sale.product_name.selling_price|floatformat:2 }}</td>
                     <td>{{ sale.quantity }}</td>
+                    <td>
+                        {% if sale.transport_required %}
+                        <span class="badge bg-info text-dark">Yes</span>
+                        {% else %}
+                        <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </td>
+
                     <td>UGX {{ sale.transport_cost|floatformat:2 }}</td>
                     <td><strong>UGX {{ sale.total_price|floatformat:2 }}</strong></td>
                     <td>{{ sale.sale_date|date:"j F Y, H:i" }}</td>

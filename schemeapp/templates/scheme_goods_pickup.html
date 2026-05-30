@@ -25,7 +25,7 @@
 
           {% for product in products %}
           <option value="{{ product.id }}">
-            {{ product.product_name }} - {{ product.unit_price|floatformat:2 }}
+            {{ product.product_name }} - {{ product.selling_price|floatformat:2 }}
           </option>
           {% endfor %}
         </select>

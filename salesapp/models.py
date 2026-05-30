@@ -35,6 +35,7 @@ class Sales(models.Model):
     sale_date = models.DateTimeField(auto_now_add=True)
 
     distance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    transport_required = models.BooleanField(default=False)
     transport_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     transport_note = models.TextField(default="", blank=True)
 

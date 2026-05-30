@@ -210,6 +210,7 @@ def scheme_goods_pickup(request, customer_id):
         total_price = base_total + transport_cost
 
         sale = Sales.objects.create(
+            customer_name=customer.full_name,
             product_name=product,
             quantity=quantity,
             total_price=total_price,
