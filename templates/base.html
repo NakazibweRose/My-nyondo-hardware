@@ -91,6 +91,7 @@
           />
           Nyondo General Hardware
         </a>
+
         <button
           class="navbar-toggler"
           type="button"
@@ -102,49 +103,47 @@
 
         <div class="collapse navbar-collapse" id="mainNavbar">
           <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
+
             {% if user.groups.all.0.name == 'Sales Manager' or user.is_superuser %}
-
-            
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'home' %}"
-                ><i class="bi bi-cart"></i> Sales</a
-              >
+              <a class="nav-link" href="{% url 'home' %}">
+                <i class="bi bi-cart"></i> Sales
+              </a>
             </li>
             {% endif %}
 
             {% if user.is_superuser %}
-            
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'stock_list' %}"
-                ><i class="bi bi-box-seam"></i> Stock</a
-              >
-            </li>
-            {% endif %}
 
-            
-            {% if user.is_superuser %}
-              <a class="nav-link" href="{% url 'dashboard' %}"
-                ><i class="bi bi-speedometer2"></i> Dashboard</a
-              >
-            </li>
-            
-            
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'category_list' %}"
-                ><i class="bi bi-tags-fill"></i> categories</a
-              >
+              <a class="nav-link" href="{% url 'stock_list' %}">
+                <i class="bi bi-box-seam"></i> Stock
+              </a>
             </li>
+
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'product_list' %}"
-                ><i class="bi bi-bag-fill"></i> Products</a
-              >
+              <a class="nav-link" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+              </a>
             </li>
+
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'scheme_customer_list' %}"
-                ><i class="bi bi-people-fill"></i> scheme</a
-              >
+              <a class="nav-link" href="{% url 'category_list' %}">
+                <i class="bi bi-tags-fill"></i> categories
+              </a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'product_list' %}">
+                <i class="bi bi-bag-fill"></i> Products
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'scheme_customer_list' %}">
+                <i class="bi bi-people-fill"></i> scheme
+              </a>
+            </li>
+
             {% endif %}
 
             {% if user.is_authenticated %}
@@ -157,6 +156,7 @@
               </form>
             </li>
             {% endif %}
+
           </ul>
         </div>
       </div>
@@ -166,15 +166,17 @@
       <h1 class="mb-4">Welcome to Nyondo General Hardware</h1>
       <p><i>From Our Store To Your Site</i></p>
     </div>
-    {% block content %} {% endblock %}
+
+    {% block content %}{% endblock %}
 
     <footer class="footer-custom py-4 mt-auto">
       <div class="container text-center">
         <p class="mb-0">
           &copy; 2026
-          <span style="color: var(--bronze); font-weight: 600"
-            >Nyondo General Hardware</span
-          >. All rights reserved.
+          <span style="color: var(--bronze); font-weight: 600">
+            Nyondo General Hardware
+          </span>
+          . All rights reserved.
         </p>
       </div>
     </footer>

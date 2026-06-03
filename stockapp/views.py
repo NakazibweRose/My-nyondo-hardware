@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
 from .models import Stock
 from salesapp.models import Product, Sales
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 
 # Stock list
@@ -11,43 +11,116 @@ def stock_list(request):
     return render(request, 'stock_list.html', {'stocks': stocks})
 
 # Create receipt
+
 def create_receipt(request):
     products = Product.objects.all()
 
     if request.method == "POST":
-        product = get_object_or_404(Product, id=request.POST.get("product"))
 
-        unit_cost = Decimal(request.POST.get("unit_cost") or 0)
-        selling_price = Decimal(request.POST.get("price") or 0)
-        quantity = int(request.POST.get("quantity") or 0)
-        amount_paid = Decimal(request.POST.get("amount_paid") or 0)
+        errors = {}
 
+        product_name = request.POST.get("product")
+        supplier = request.POST.get("supplier")
+        quantity = request.POST.get("quantity")
+        unit_cost = request.POST.get("unit_cost")
+        selling_price = request.POST.get("price")
+        amount_paid = request.POST.get("amount_paid")
+        date = request.POST.get("date")
 
-        if quantity <= 0:
-           
+        # PRODUCT
+        if not product_name:
+            errors["product"] = "Please select a product."
+
+        # SUPPLIER
+        if not supplier:
+            errors["supplier"] = "Supplier is required."
+
+        # QUANTITY
+        if not quantity:
+            errors["quantity"] = "Quantity is required."
+        else:
+            try:
+                quantity = int(quantity)
+                if quantity <= 0:
+                    errors["quantity"] = "Quantity must be greater than zero."
+            except:
+                errors["quantity"] = "Enter a valid quantity."
+
+        # UNIT COST
+        if not unit_cost:
+            errors["unit_cost"] = "Unit cost is required."
+        else:
+            try:
+                unit_cost = Decimal(unit_cost)
+                if unit_cost <= 0:
+                    errors["unit_cost"] = "Unit cost must be greater than zero."
+            except:
+                errors["unit_cost"] = "Enter a valid unit cost."
+
+        # SELLING PRICE
+        if not selling_price:
+            errors["price"] = "Selling price is required."
+        else:
+            try:
+                selling_price = Decimal(selling_price)
+                if selling_price <= 0:
+                    errors["price"] = "Selling price must be greater than zero."
+            except:
+                errors["price"] = "Enter a valid selling price."
+
+        # AMOUNT PAID
+        if not amount_paid:
+            errors["amount_paid"] = "Amount paid is required."
+        else:
+            try:
+                amount_paid = Decimal(amount_paid)
+                if amount_paid < 0:
+                    errors["amount_paid"] = "Amount paid cannot be negative."
+            except:
+                errors["amount_paid"] = "Enter a valid amount."
+
+        # DATE
+        if not date:
+            errors["date"] = "Date is required."
+
+        # STOP IF ERRORS
+        if errors:
             return render(request, "create_receipt.html", {
                 "products": products,
-                "error": f"Quantity must be greater than zero ."
+                "errors": errors
             })
 
+        # GET PRODUCT WITHOUT ID
+        try:
+            product = Product.objects.get(product_name=product_name)
+        except Product.DoesNotExist:
+            return render(request, "create_receipt.html", {
+                "products": products,
+                "errors": {"product": "Selected product does not exist."}
+            })
+
+        # CREATE STOCK
         receipt = Stock.objects.create(
             product=product,
-            supplier=request.POST.get("supplier"),
+            supplier=supplier,
             quantity=quantity,
             unit_cost=unit_cost,
-            amount_paid=amount_paid,
             selling_price=selling_price,
-            date=request.POST.get("date"),
+            amount_paid=amount_paid,
+            date=date,
             is_paid=request.POST.get("is_paid") == "on"
         )
 
+        # UPDATE PRODUCT PRICES
         product.unit_price = unit_cost
         product.selling_price = selling_price
         product.save()
 
         return redirect("goods_received_note", receipt_id=receipt.id)
 
-    return render(request, "create_receipt.html", {"products": products})
+    return render(request, "create_receipt.html", {
+        "products": products
+    })
 # Goods received note
 def goods_received_note(request, receipt_id):
     receipt = get_object_or_404(Stock, id=receipt_id)
@@ -59,7 +132,7 @@ def stock_edit(request, pk):
     stock = get_object_or_404(Stock, pk=pk)
 
     if request.method == "POST":
-        product = get_object_or_404(Product, id=request.POST.get('product'))
+        product = get_object_or_404(Product, product_name=request.POST.get('product'))
         stock.product = product
         stock.supplier = request.POST.get("supplier")
         stock.quantity = int(request.POST.get("quantity") or 0)

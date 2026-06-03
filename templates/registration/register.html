@@ -14,7 +14,7 @@ Register
             Create Account
         </h2>
 
-        <!-- Messages -->
+        
         {% if messages %}
 
             {% for message in messages %}
@@ -59,7 +59,7 @@ Register
                 {{ form.password2 }}
             </div>
 
-            <button type="submit" class="btn btn-success w-100">
+            <button type="submit" class="btn btn-warning w-100">
                 Register
             </button>
 
@@ -71,7 +71,7 @@ Register
 
             <p>Already have an account?</p>
 
-            <a href="{% url 'login' %}" class="btn btn-primary">
+            <a href="{% url 'login' %}" class="btn btn-dark">
                 Login
             </a>
 

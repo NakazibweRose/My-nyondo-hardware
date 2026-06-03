@@ -1,83 +1,124 @@
 {% extends "base.html" %}
-
 {% block content %}
+
 <div class="card shadow-sm col-6 mx-auto">
     <div class="card-header bg-dark text-white">
         <h3 class="mb-0">Add Stock Receipt</h3>
     </div>
 
-    <div class="card-body ">
+    <div class="card-body">
+
         <form method="POST">
             {% csrf_token %}
 
-           {% if error %}
-            <div class="alert alert-danger">{{ error }}</div>
-        {% endif %}
+            {% if errors.product %}
+                <div class="alert alert-danger">{{ errors.product }}</div>
+            {% endif %}
 
-
+            <!-- PRODUCT -->
             <div class="mb-3">
                 <label class="form-label">Product</label>
 
-                <select name="product" class="form-select" required>
+                <select name="product" class="form-select">
                     <option value="">Select product</option>
 
                     {% for product in products %}
-                    <option value="{{ product.id }}">
-                        {{ product.product_name }} | Current Price: {{ product.unit_cost }}
-                    </option>
+                        <option value="{{ product.product_name }}"
+                            {% if request.POST.product == product.product_name %}
+                                selected
+                            {% endif %}>
+                            {{ product.product_name }} | Current Price: {{ product.unit_cost }}
+                        </option>
                     {% endfor %}
-                </select> 
+                </select>
 
-                
+                {% if errors.product %}
+                    <div class="text-danger small">{{ errors.product }}</div>
+                {% endif %}
             </div>
 
+            <!-- SUPPLIER -->
             <div class="mb-3">
                 <label class="form-label">Supplier</label>
-                <input type="text" name="supplier" class="form-control" required>
+                <input type="text" name="supplier" class="form-control"
+                       value="{{ request.POST.supplier }}">
+
+                {% if errors.supplier %}
+                    <div class="text-danger small">{{ errors.supplier }}</div>
+                {% endif %}
             </div>
 
+            <!-- QUANTITY -->
             <div class="mb-3">
                 <label class="form-label">Quantity</label>
-                <input type="number" name="quantity" class="form-control" min="1" required>
+                <input type="number" name="quantity" class="form-control"
+                       value="{{ request.POST.quantity }}">
+
+                {% if errors.quantity %}
+                    <div class="text-danger small">{{ errors.quantity }}</div>
+                {% endif %}
             </div>
-            
+
+            <!-- UNIT COST -->
             <div class="mb-3">
                 <label class="form-label">Unit Cost</label>
-                <input type="number" name="unit_cost" step="0.01" class="form-control" required>
-                <small class="text-muted">
-                    This will update the product's current unit cost.
-                </small>
+                <input type="number" name="unit_cost" step="0.01" class="form-control"
+                       value="{{ request.POST.unit_cost }}">
+
+                {% if errors.unit_cost %}
+                    <div class="text-danger small">{{ errors.unit_cost }}</div>
+                {% endif %}
             </div>
+
+            <!-- SELLING PRICE -->
             <div class="mb-3">
                 <label class="form-label">Selling Price</label>
-                <input type="number" name="price" class="form-control" required>
-                <small class="text-muted">
-                    This will update the product's current unit price.
-                </small>
-            </div> 
+                <input type="number" name="price" class="form-control"
+                       value="{{ request.POST.price }}">
 
+                {% if errors.price %}
+                    <div class="text-danger small">{{ errors.price }}</div>
+                {% endif %}
+            </div>
 
+            <!-- AMOUNT PAID -->
             <div class="mb-3">
                 <label class="form-label">Amount Paid</label>
-                <input type="number" name="amount_paid" class="form-control" min="0" step="0.01" required>
+                <input type="number" name="amount_paid" class="form-control"
+                       value="{{ request.POST.amount_paid }}">
+
+                {% if errors.amount_paid %}
+                    <div class="text-danger small">{{ errors.amount_paid }}</div>
+                {% endif %}
             </div>
 
-
+            <!-- DATE -->
             <div class="mb-3">
                 <label class="form-label">Date</label>
-                <input type="date" name="date" class="form-control" required>
+                <input type="date" name="date" class="form-control"
+                       value="{{ request.POST.date }}">
+
+                {% if errors.date %}
+                    <div class="text-danger small">{{ errors.date }}</div>
+                {% endif %}
             </div>
 
+            <!-- CHECKBOX -->
             <div class="form-check mb-3">
-                <input type="checkbox" name="is_paid" class="form-check-input" id="is_paid">
-                <label class="form-check-label" for="is_paid">
-                    Supplier has been paid
-                </label>
+                <input type="checkbox" name="is_paid" class="form-check-input">
+                <label class="form-check-label">Supplier has been paid</label>
             </div>
 
-            <button type="submit" class="btn btn-dark">Save Receipt</button>
-            <a href="{% url 'create_receipt' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-dark">
+                Save Receipt
+            </button>
+
+            <a href="{% url 'create_receipt' %}" class="btn btn-secondary">
+                Cancel
+            </a>
+
         </form>
+
     </div>
 </div>
 

@@ -87,31 +87,75 @@ def delete_product(request, product_id):
         "product": product
     })
 
-from decimal import Decimal
-from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Sum
 
 def create_sale(request):
     products = Product.objects.all()
 
+    context = {
+        "products": products,
+        "errors": {},
+        "data": {}
+    }
+
     if request.method == "POST":
-        product_id = request.POST.get("product")
-        quantity = request.POST.get("quantity")
-        customer_name = request.POST.get("customer_name")
-        customer_type = request.POST.get("customer_type")
-        distance = request.POST.get("distance") or 0
+
+        customer_type = request.POST.get("customer_type", "").strip()
+        customer_name = request.POST.get("customer_name", "").strip()
+        product_id = request.POST.get("product", "").strip()
+        quantity = request.POST.get("quantity", "").strip()
+        distance = request.POST.get("distance", "0").strip()
         transport_required = request.POST.get("transport_required") == "on"
 
-        if not product_id or not quantity or not customer_name or not customer_type:
-            return render(request, "create_sale.html", {
-                "products": products,
-                "error": "All required fields must be filled."
-            })
+        context["data"] = request.POST
+
+        # Validation
+
+        if not customer_type:
+            context["errors"]["customer_type"] = "Customer type is required."
+
+        if not customer_name:
+            context["errors"]["customer_name"] = "Customer name is required."
+
+        if not product_id:
+            context["errors"]["product"] = "Please select a product."
+
+        if not quantity:
+            context["errors"]["quantity"] = "Quantity is required."
+
+        if context["errors"]:
+            return render(request, "create_sale.html", context)
+
+        try:
+            quantity = int(quantity)
+
+            if quantity <= 0:
+                context["errors"]["quantity"] = (
+                    "Quantity must be greater than zero."
+                )
+                return render(request, "create_sale.html", context)
+
+        except ValueError:
+            context["errors"]["quantity"] = (
+                "Quantity must be a valid number."
+            )
+            return render(request, "create_sale.html", context)
+
+        try:
+            distance = Decimal(distance)
+
+            if distance < 0:
+                context["errors"]["distance"] = (
+                    "Distance cannot be negative."
+                )
+                return render(request, "create_sale.html", context)
+
+        except:
+            context["errors"]["distance"] = (
+                "Distance must be a valid number."
+            )
+            return render(request, "create_sale.html", context)
 
         product = get_object_or_404(Product, id=product_id)
-
-        quantity = int(quantity)
-        distance = Decimal(distance)
 
         total_received = Stock.objects.filter(
             product=product
@@ -124,10 +168,10 @@ def create_sale(request):
         available_stock = total_received - total_sold
 
         if quantity > available_stock:
-            return render(request, "create_sale.html", {
-                "products": products,
-                "error": f"Not enough stock. Available stock is {available_stock}."
-            })
+            context["errors"]["quantity"] = (
+                f"Only {available_stock} items available in stock."
+            )
+            return render(request, "create_sale.html", context)
 
         base_total = product.selling_price * quantity
 
@@ -135,9 +179,14 @@ def create_sale(request):
         transport_note = "No transport required"
 
         if transport_required:
-            if distance <= Decimal("10") and base_total >= Decimal("500000"):
+
+            if (
+                distance <= Decimal("10")
+                and base_total >= Decimal("500000")
+            ):
                 transport_cost = Decimal("0")
                 transport_note = "Free delivery"
+
             else:
                 transport_cost = Decimal("30000")
                 transport_note = "Standard delivery"
@@ -158,10 +207,9 @@ def create_sale(request):
 
         return redirect("invoice", sale_id=sale.id)
 
-    return render(request, "create_sale.html", {
-        "products": products
-    })
-        
+    return render(request, "create_sale.html", context)
+
+    return render(request, "create_sale.html", context)
 def invoice(request, sale_id):
     sale = get_object_or_404(Sales, id=sale_id)
     return render(request, "invoice.html", {"sale": sale})

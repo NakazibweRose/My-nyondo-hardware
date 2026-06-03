@@ -22,7 +22,7 @@
                     <th>Category</th>
                     <th>Selling Price</th>
                     <th>Qty</th>
-                    <th>transport_required</th>
+                    <th>Transport Required</th>
                     <th>Transport</th>
                     <th>Total Price</th>
                     <th>Sale Date</th>
@@ -41,7 +41,7 @@
                     <td>{{ sale.quantity }}</td>
                     <td>
                         {% if sale.transport_required %}
-                        <span class="badge bg-info text-dark">Yes</span>
+                        <span class="badge bg-dark text-white">Yes</span>
                         {% else %}
                         <span class="badge bg-secondary">No</span>
                         {% endif %}
