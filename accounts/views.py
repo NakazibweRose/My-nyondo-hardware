@@ -52,7 +52,7 @@ class CustomLoginView(LoginView):
             return reverse_lazy('home')
 
         if user.groups.filter(name='Store Manager').exists():
-            return reverse_lazy('scheme_customer_list')
+            return reverse_lazy('stock_list')
         
         if user.groups.filter(name='Manager').exists():
             return reverse_lazy('stock_list')
