@@ -3,37 +3,84 @@
 {% block content %}
 
 <div class="card shadow-sm col-6 mx-auto">
-    <div class="card-header bg-dark text-white ">
-        <h3 class="mb-0">Edit Sale</h3>
-    </div>
 
-    <div class="card-body">
-        <form method="POST">
-            {% csrf_token %}
-
-            <div class="mb-3">
-                <label class="form-label">Product</label>
-
-                <select name="product" class="form-select" required>
-                    {% for product in products %}
-                    <option value="{{ product.id }}" {% if sale.product.id == product.id %}selected{% endif %}>
-                        {{ product.product_name }} |
-                        {{ product.category.category_name }} |
-                        {{ product.price }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Quantity</label>
-                <input type="number" name="quantity" value="{{ sale.quantity }}" class="form-control" min="1" required>
-            </div>
-
-            <button type="submit" class="btn btn-warning">Update Sale</button>
-            <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
+<div class="card-header bg-dark text-white">
+    <h3 class="mb-0">Edit Sale</h3>
 </div>
+
+<div class="card-body">
+
+    {% if errors %}
+    <div class="alert alert-danger alert-dismissible fade show">
+        Please correct the errors below.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Product</label>
+
+            <select name="product"
+                    class="form-select {% if errors.product %}is-invalid{% endif %}">
+
+                {% for product in products %}
+                <option value="{{ product.id }}"
+                    {% if sale.product_name.id == product.id %}selected{% endif %}>
+                    {{ product.product_name }} |
+                    {{ product.category_name.category_name }} |
+                    {{ product.unit_price }}
+                </option>
+                {% endfor %}
+            </select>
+
+            {% if errors.product %}
+            <div class="invalid-feedback d-block">
+                {{ errors.product }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Quantity</label>
+
+            <input type="number"
+                   name="quantity"
+                   value="{{ request.POST.quantity|default:sale.quantity }}"
+                   class="form-control {% if errors.quantity %}is-invalid{% endif %}"
+                   min="1">
+
+            {% if errors.quantity %}
+            <div class="invalid-feedback d-block">
+                {{ errors.quantity }}
+            </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-warning">
+            Update Sale
+        </button>
+
+        <a href="{% url 'home' %}" class="btn btn-secondary">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+
+</div>
+
+<style>
+.is-invalid {
+    border: 1px solid #dc3545 !important;
+}
+.invalid-feedback {
+    display: block !important;
+}
+</style>
 
 {% endblock %}

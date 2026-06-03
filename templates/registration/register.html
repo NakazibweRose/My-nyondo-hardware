@@ -6,79 +6,170 @@ Register
 
 {% block content %}
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+<div class="container d-flex justify-content-center align-items-center" style="min-height:80vh;">
 
-    <div class="card shadow p-4" style="width: 450px;">
 
-        <h2 class="text-center mb-4">
-            Create Account
-        </h2>
+<div class="card shadow p-4" style="width:500px;">
 
-        
-        {% if messages %}
+    <h2 class="text-center mb-4">
+        Create Account
+    </h2>
 
-            {% for message in messages %}
-
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-
-                    {{ message }}
-
-                    <button
-                        type="button"
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show">
+                {{ message }}
+                <button type="button"
                         class="btn-close"
-                        data-bs-dismiss="alert">
-                    </button>
+                        data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
 
-                </div>
+    {% if form.errors %}
+    <div class="alert alert-danger alert-dismissible fade show">
 
-            {% endfor %}
+        Please correct the errors below.
 
-        {% endif %}
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"></button>
 
-        <form method="POST">
+    </div>
+    {% endif %}
 
-            {% csrf_token %}
+    <form method="POST" novalidate>
 
-            <div class="mb-3">
-                <label class="form-label">Username</label>
+        {% csrf_token %}
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Username
+            </label>
+
+            <div class="{% if form.username.errors %}border border-danger rounded p-1{% endif %}">
                 {{ form.username }}
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Role</label>
+            {% for error in form.username.errors %}
+                <div class="text-danger mt-1">
+                    {{ error }}
+                </div>
+            {% endfor %}
+
+        </div>
+
+         <div class="mb-3">
+
+            <label class="form-label">
+                Role
+            </label>
+
+            <div class="{% if form.role.errors %}border border-danger rounded p-1{% endif %}">
                 {{ form.role }}
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Password</label>
+            {% for error in form.role.errors %}
+                <div class="text-danger mt-1">
+                    {{ error }}
+                </div>
+            {% endfor %}
+
+        </div>
+        <div class="mb-3">
+
+            <label class="form-label">
+                Password
+            </label>
+
+            <div class="{% if form.password1.errors %}border border-danger rounded p-1{% endif %}">
                 {{ form.password1 }}
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Confirm Password</label>
+            {% for error in form.password1.errors %}
+                <div class="text-danger mt-1">
+                    {{ error }}
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Confirm Password
+            </label>
+
+            <div class="{% if form.password2.errors %}border border-danger rounded p-1{% endif %}">
                 {{ form.password2 }}
             </div>
 
-            <button type="submit" class="btn btn-warning w-100">
-                Register
-            </button>
-
-        </form>
-
-        <hr>
-
-        <div class="text-center">
-
-            <p>Already have an account?</p>
-
-            <a href="{% url 'login' %}" class="btn btn-dark">
-                Login
-            </a>
+            {% for error in form.password2.errors %}
+                <div class="text-danger mt-1">
+                    {{ error }}
+                </div>
+            {% endfor %}
 
         </div>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+
+            </div>
+        {% endif %}
+
+        <button type="submit"
+                class="btn btn-warning w-100">
+
+            Register
+
+        </button>
+
+    </form>
+
+    <hr>
+
+    <div class="text-center">
+
+        <p>
+            Already have an account?
+        </p>
+
+        <a href="{% url 'login' %}"
+           class="btn btn-dark">
+
+            Login
+
+        </a>
 
     </div>
 
 </div>
+
+
+</div>
+
+<style>
+
+.text-danger{
+    font-size:0.9rem;
+}
+
+.border-danger input,
+.border-danger select{
+    border:none !important;
+    box-shadow:none !important;
+}
+
+.border-danger{
+    border-width:2px !important;
+}
+
+</style>
 
 {% endblock %}

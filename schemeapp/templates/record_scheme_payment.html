@@ -1,26 +1,74 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="container mt-4 col-5">
+
     <div class="card shadow-sm">
+
         <div class="card-header bg-dark text-white">
             <h3 class="mb-0">Record Payment - {{ customer.full_name }}</h3>
         </div>
+
         <div class="card-body">
-            <form method="POST">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" novalidate>
+
                 {% csrf_token %}
+
                 <div class="mb-3">
                     <label class="form-label">Amount Paid</label>
-                    <input type="number" name="amount_paid" class="form-control" step="0.01" min="0" required>
+
+                    <input type="number"
+                           name="amount_paid"
+                           class="form-control {% if errors.amount_paid %}is-invalid{% endif %}"
+                           step="0.01"
+                           min="0"
+                           value="{{ request.POST.amount_paid|default:'' }}">
+
+                    {% if errors.amount_paid %}
+                        <div class="text-danger">
+                            {{ errors.amount_paid }}
+                        </div>
+                    {% endif %}
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Notes</label>
-                    <textarea name="notes" class="form-control" rows="3"></textarea>
+
+                    <textarea name="notes"
+                              class="form-control"
+                              rows="3">{{ request.POST.notes|default:'' }}</textarea>
                 </div>
-                <button type="submit" class="btn btn-dark">Save Payment</button>
-                <a href="{% url 'scheme_customer_list' %}" class="btn btn-secondary">Cancel</a>
+
+                <button type="submit" class="btn btn-dark">
+                    Save Payment
+                </button>
+
+                <a href="{% url 'scheme_customer_list' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+
             </form>
+
         </div>
     </div>
+
 </div>
+
+<style>
+.is-invalid {
+    border: 1px solid #dc3545 !important;
+}
+</style>
+
 {% endblock %}

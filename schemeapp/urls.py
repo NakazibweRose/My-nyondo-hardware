@@ -11,5 +11,6 @@ urlpatterns = [
     path("customer/<int:customer_id>/pickup/", views.scheme_goods_pickup, name="scheme_goods_pickup"),
     path("scheme/customers/", views.scheme_customer_list, name="scheme_customer_list"),
     path("scheme/report", views.scheme_report, name="scheme_report"),
-    path('scheme/customer/statement/<int:customer_id>/',views.scheme_statement,name='scheme_statement')
+    path('scheme/customer/statement/<int:customer_id>/',views.scheme_statement,name='scheme_statement'),
+    path("customer/delete/<int:pk>/", views.delete_customer, name="delete_customer"),
 ]

@@ -5,121 +5,111 @@
 
 {% block extra_css %}
 <style>
-  .login-screen {
-    min-height: 85vh;
-    background: linear-gradient(135deg, #050505, #1a1a1a);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 30px;
-  }
+.login-screen{
+    min-height:85vh;
+    background:linear-gradient(135deg,#050505,#1a1a1a);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
 
-  .login-card {
-    background-color: #111;
-    border: 1px solid #cd7f32;
-    border-radius: 18px;
-    width: 100%;
-    max-width: 400px;
-    padding: 35px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-  }
+.login-card{
+    background:#111;
+    border:1px solid #cd7f32;
+    border-radius:18px;
+    width:100%;
+    max-width:420px;
+    padding:35px;
+}
 
-  .logo-wrap {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+.logo-wrap{
+    text-align:center;
+    margin-bottom:20px;
+}
 
-  .login-logo {
-    width: 110px;
-    height: 110px;
-    object-fit: contain;
-    margin-bottom: 12px;
-  }
+.login-logo{
+    width:110px;
+    height:110px;
+    object-fit:contain;
+}
 
-  .project-title {
-    color: #cd7f32;
-    font-weight: 800;
-    font-size: 1.25rem;
-    text-align: center;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-  }
+.project-title{
+    color:#cd7f32;
+    font-weight:800;
+    font-size:1.25rem;
+    text-transform:uppercase;
+}
 
-  .project-subtitle {
-    color: #ddd;
-    text-align: center;
-    font-size: 0.9rem;
-    margin-bottom: 25px;
-  }
+.project-subtitle{
+    color:#ddd;
+    margin-bottom:25px;
+}
 
-  .form-label {
-    color: #f5f5f5;
-    font-weight: 500;
-  }
+.form-label{
+    color:#fff;
+    font-weight:500;
+}
 
-  .form-control {
-    background-color: #050505;
-    border: 1px solid #444;
-    color: white;
-    border-radius: 10px;
-    padding: 12px 15px;
+.login-card input{
     width:100%;
     height:50px;
+    background:#050505;
+    border:1px solid #444;
+    color:#fff;
+    border-radius:10px;
+    padding:12px 15px;
+}
 
-  }
+/* removes browser default validation look */
+input:invalid{
+    box-shadow:none !important;
+}
 
-  .form-control:focus {
-    border-color: #cd7f32;
-    box-shadow: 0 0 0 0.15rem rgba(205, 127, 50, 0.25);
-    background-color: #050505;
-    color: white;
-  }
+input:focus{
+    outline:none;
+    border-color:#cd7f32;
+    box-shadow:0 0 0 .15rem rgba(205,127,50,.25);
+}
 
-  .btn-bronze {
-    background-color: #cd7f32;
-    color: black;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
-    padding: 11px;
-  }
+.alert-box{
+    background:#f8d7da;
+    color:#842029;
+    border:1px solid #f5c2c7;
+    border-left:5px solid #dc3545;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
 
-  .btn-bronze:hover {
-    background-color: #ffffff;
-    color: black;
-  }
+.errorlist{
+    list-style:none;
+    padding:0;
+    margin:5px 0 0;
+}
 
-  .forgot-text {
-    color: #cd7f32;
-    font-size: 0.9rem;
-  }
+.errorlist li{
+    color:#ff6b6b;
+    font-size:.85rem;
+}
 
-  .admin-help-text {
-    color: #ddd;
-    font-size: 0.85rem;
-  }
+.btn-bronze{
+    background:#cd7f32;
+    color:#000;
+    font-weight:bold;
+    border:none;
+    border-radius:10px;
+    padding:12px;
+}
 
-  .register-link {
-    color: #cd7f32;
-    text-decoration: none;
-    font-weight: 600;
-  }
+.btn-bronze:hover{
+    background:#fff;
+}
 
-  .register-link:hover {
-    text-decoration: underline;
-  }
-
-  .login-card form{
-    width:100%;
-  }
-
-  .login-card .mb-3{
-    width:100%;
-  }
-
-  .login-card input{
-    width:100%;
-  }
+.register-link{
+    color:#cd7f32;
+    text-decoration:none;
+}
 </style>
 {% endblock %}
 
@@ -127,68 +117,71 @@
 
 <section class="login-screen">
 
-  <div class="login-card">
+    <div class="login-card">
 
-    <div class="logo-wrap">
-      <img src="{% static 'true.png' %}" alt="Nyondo Hardware Logo" class="login-logo">
+        <div class="logo-wrap">
+            <img src="{% static 'true.png' %}" class="login-logo">
 
-      <div class="project-title">
-        NYONDO GENERAL HARDWARE
-      </div>
+            <div class="project-title">
+                NYONDO GENERAL HARDWARE
+            </div>
 
-      <div class="project-subtitle">
-        Management System Login
-      </div>
-    </div>
-
-    <form method="POST">
-      {% csrf_token %}
-
-      {% if form.errors %}
-        <div class="alert alert-danger">
-          Invalid username or password.
+            <div class="project-subtitle">
+                Management System Login
+            </div>
         </div>
-      {% endif %}
 
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
+        <form method="POST" novalidate>
+            {% csrf_token %}
 
-      <label for="username" class="form-label">Username</label>
-      <div class="mb-3">
-        {{ form.username }}
-      </div>
+            {% if form.non_field_errors %}
+            <div class="alert-box">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
 
-      <label for="password" class="form-label">Password</label>
-      <div class="mb-3">
-        
-        {{ form.password }}
-      </div>
+            <div class="mb-3">
+                <label class="form-label">Username</label>
 
-      <button type="submit" class="btn btn-bronze w-100">
-        Login
-      </button>
+                {{ form.username }}
 
-      <p class="text-center mt-3 mb-1">
-        <span class="forgot-text">Forgot your password?</span>
-        <br>
-        <span class="admin-help-text">
-          Please contact the system administrator for assistance.
-        </span>
-      </p>
+                {% if form.username.errors %}
+                <div class="alert-box">
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
 
-      <p class="text-center mt-3 mb-0 text-light">
-        Don't have an account?
-        <a href="{% url 'register' %}" class="register-link">Register</a>
-      </p>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
 
-    </form>
+                {{ form.password }}
 
-  </div>
+                {% if form.password.errors %}
+                <div class="alert-box">
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div>
+            <p>Don't have an account? <a href="{% url 'register' %}" class="register-link">Register here</a></p>
+            <p>Forgot password? </p>
+            <p>Contact the Admin for help</P>
+            </div>
+
+            <button type="submit" class="btn btn-bronze w-100">
+                Login
+            </button>
+
+        </form>
+
+    </div>
 
 </section>
 

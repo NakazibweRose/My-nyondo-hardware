@@ -107,6 +107,17 @@ def temporary_receipt(request, payment_id):
     })
 
 
+def delete_customer(request, pk):
+    customer = get_object_or_404(SchemeCustomer, pk=pk)
+
+    if request.method == "POST":
+        customer.delete()
+        return redirect("scheme_customer_list")  # use your real list name
+
+    return render(request, "delete_customer.html", {
+        "customer": customer
+    })
+
 def customer_scheme_detail(request, customer_id):
     customer = get_object_or_404(SchemeCustomer, id=customer_id)
 
@@ -138,17 +149,28 @@ def customer_scheme_detail(request, customer_id):
 
 def scheme_goods_pickup(request, customer_id):
     customer = get_object_or_404(SchemeCustomer, id=customer_id)
-
     products = Product.objects.all()
 
     if request.method == "POST":
-        product = get_object_or_404(
-            Product,
-            id=request.POST.get("product")
-        )
 
+        product_id = request.POST.get("product")
+        quantity_raw = request.POST.get("quantity", "0")
+        distance_raw = request.POST.get("distance", "0")
+        transport_required = request.POST.get("transport_required") == "on"
+
+        # ✅ FIX 1: Prevent empty product crash
+        if not product_id:
+            messages.error(request, "Please select a product.")
+            return render(request, "scheme_goods_pickup.html", {
+                "customer": customer,
+                "products": products
+            })
+
+        product = get_object_or_404(Product, id=product_id)
+
+        # Quantity validation (safe)
         try:
-            quantity = int(request.POST.get("quantity", "0"))
+            quantity = int(quantity_raw)
         except ValueError:
             messages.error(request, "Invalid quantity.")
             return render(request, "scheme_goods_pickup.html", {
@@ -163,8 +185,9 @@ def scheme_goods_pickup(request, customer_id):
                 "products": products
             })
 
+        # Distance validation (safe)
         try:
-            distance = Decimal(request.POST.get("distance", "0") or "0")
+            distance = Decimal(distance_raw or "0")
         except InvalidOperation:
             messages.error(request, "Invalid distance.")
             return render(request, "scheme_goods_pickup.html", {
@@ -172,18 +195,14 @@ def scheme_goods_pickup(request, customer_id):
                 "products": products
             })
 
-        total_received = Stock.objects.filter(
-            product=product
-        ).aggregate(
+        total_received = Stock.objects.filter(product=product).aggregate(
             total=Sum("quantity")
         )["total"] or 0
 
         total_sold = Sales.objects.filter(
-            customer_name = customer,
+            customer_name=customer,
             product_name=product
-        ).aggregate(
-            total=Sum("quantity")
-        )["total"] or 0
+        ).aggregate(total=Sum("quantity"))["total"] or 0
 
         available_stock = total_received - total_sold
 
@@ -197,15 +216,19 @@ def scheme_goods_pickup(request, customer_id):
                 "products": products
             })
 
-        selling_price = Decimal(str(product.unit_price))
+        selling_price = Decimal(str(product.selling_price))
         base_total = selling_price * quantity
 
-        if distance <= 10 and base_total >= Decimal("500000"):
-            transport_cost = Decimal("0")
-            transport_note = "free delivery"
+        if transport_required:
+            if distance <= 10 and base_total >= Decimal("500000"):
+                transport_cost = Decimal("0")
+                transport_note = "free delivery"
+            else:
+                transport_cost = Decimal("30000")
+                transport_note = "standard delivery fees"
         else:
-            transport_cost = Decimal("30000")
-            transport_note = "standard delivery fees"
+            transport_cost = Decimal("0")
+            transport_note = "no transport required"
 
         total_price = base_total + transport_cost
 
@@ -234,7 +257,6 @@ def scheme_goods_pickup(request, customer_id):
         "products": products
     })
 
-
 def scheme_report(request):
     sales = Sales.objects.all()
 
@@ -245,7 +267,7 @@ def scheme_report(request):
         sales = sales.filter(sale_date__range=[start_date, end_date])
 
     total_goods = sum(
-        sale.product_name.unit_price * sale.quantity
+        sale.product_name.selling_price * sale.quantity
         for sale in sales
     )
 

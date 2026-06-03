@@ -5,6 +5,7 @@ from salesapp.models import Product, Sales
 from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 
+
 # Stock list
 def stock_list(request):
     stocks = Stock.objects.all().order_by("-date")
@@ -130,24 +131,75 @@ def goods_received_note(request, receipt_id):
 # Edit receipt
 def stock_edit(request, pk):
     stock = get_object_or_404(Stock, pk=pk)
+    errors = {}  # ✅ FIX: always define it
 
     if request.method == "POST":
-        product = get_object_or_404(Product, product_name=request.POST.get('product'))
-        stock.product = product
-        stock.supplier = request.POST.get("supplier")
-        stock.quantity = int(request.POST.get("quantity") or 0)
-        stock.unit_cost = float(request.POST.get("unit_cost") or 0)
-        stock.amount_paid = float(request.POST.get("amount_paid") or 0)
-        stock.selling_price = float(request.POST.get("price") or 0)
+        product = request.POST.get('product')
+        supplier = request.POST.get("supplier")
+        quantity = request.POST.get("quantity")
+        unit_cost = request.POST.get("unit_cost")
+        amount_paid = request.POST.get("amount_paid")
+        price = request.POST.get("price")
+
+        # BASIC VALIDATION (same style as your other view)
+        if not product:
+            errors["product"] = "Product is required."
+
+        if not supplier:
+            errors["supplier"] = "Supplier is required."
+
+        try:
+            quantity = int(quantity or 0)
+            if quantity <= 0:
+                errors["quantity"] = "Quantity must be greater than 0."
+        except:
+            errors["quantity"] = "Enter a valid quantity."
+
+        try:
+            unit_cost = float(unit_cost or 0)
+        except:
+            errors["unit_cost"] = "Enter a valid unit cost."
+
+        try:
+            price = float(price or 0)
+        except:
+            errors["price"] = "Enter a valid selling price."
+
+        try:
+            amount_paid = float(amount_paid or 0)
+        except:
+            errors["amount_paid"] = "Enter a valid amount."
+
+        if errors:
+            return render(request, "stock_edit.html", {
+                "stock": stock,
+                "errors": errors
+            })
+
+        # SAVE ONLY IF NO ERRORS
+        product_obj = Product.objects.filter(product_name=product).first()
+        if not product_obj:
+            errors["product"] = "Product not found."
+            return render(request, "stock_edit.html", {
+                "stock": stock,
+                "errors": errors
+            })
+
+        stock.product = product_obj
+        stock.supplier = supplier
+        stock.quantity = quantity
+        stock.unit_cost = unit_cost
+        stock.amount_paid = amount_paid
+        stock.selling_price = price
         stock.is_paid = bool(request.POST.get("is_paid"))
 
         stock.save()
         return redirect("stock_list")
 
     return render(request, "stock_edit.html", {
-        "stock": stock
+        "stock": stock,
+        "errors": errors
     })
-
 # Delete receipt
 def delete_receipt(request, receipt_id):
     receipt = get_object_or_404(Stock, id=receipt_id)

@@ -3,33 +3,90 @@
 {% block content %}
 
 <div class="card shadow-sm col-md-6 mx-auto">
-    <div class="card-header bg-dark text-white">
-        <h3 class="mb-0">Add Category</h3>
+
+<div class="card-header bg-dark text-white">
+    <h3 class="mb-0">Add Category</h3>
+</div>
+
+<div class="card-body">
+
+    {% if errors %}
+    <div class="alert alert-danger alert-dismissible fade show">
+
+        Please correct the errors below.
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"></button>
+
     </div>
+    {% endif %}
 
-    <div class="card-body">
-        <form method="POST">
-            {% csrf_token %}
+    <form method="POST" novalidate>
 
-            <div class="mb-3">
-                <label class="form-label">Category Name</label>
-                <input type="text" name="category_name" class="form-control" required>
-            </div>
+        {% csrf_token %}
 
-            <div class="mb-3">
-                <label class="form-label">Slug</label>
-                <input type="text" name="slug" class="form-control" required>
-            </div>
-            {% if error %}
-            <div class="alert alert-danger">
-            {{ error }}
+        <div class="mb-3">
+
+            <label class="form-label">
+                Category Name
+            </label>
+
+            <input
+                type="text"
+                name="category_name"
+                value="{{ data.category_name }}"
+                class="form-control {% if errors.category_name %}is-invalid{% endif %}"
+            >
+
+            {% if errors.category_name %}
+            <div class="invalid-feedback d-block">
+                {{ errors.category_name }}
             </div>
             {% endif %}
 
-            <button type="submit" class="btn btn-warning">Save Category</button>
-            <a href="{% url 'category_list' %}" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Slug
+            </label>
+
+            <input
+                type="text"
+                name="slug"
+                value="{{ data.slug }}"
+                class="form-control {% if errors.slug %}is-invalid{% endif %}"
+            >
+
+            {% if errors.slug %}
+            <div class="invalid-feedback d-block">
+                {{ errors.slug }}
+            </div>
+            {% endif %}
+
+        </div>
+
+        <button type="submit"
+                class="btn btn-warning">
+
+            Save Category
+
+        </button>
+
+        <a href="{% url 'category_list' %}"
+           class="btn btn-secondary">
+
+            Cancel
+
+        </a>
+
+    </form>
+
+</div>
+
+
 </div>
 
 {% endblock %}

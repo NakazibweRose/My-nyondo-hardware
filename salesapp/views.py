@@ -33,24 +33,69 @@ def category_list(request):
 
 
 def create_category(request):
+
+    context = {
+        "errors": {},
+        "data": {}
+    }
+
     if request.method == "POST":
-        category_name = request.POST.get("category_name")
-        slug = request.POST.get("slug")
+
+        category_name = request.POST.get(
+            "category_name", ""
+        ).strip()
+
+        slug = request.POST.get(
+            "slug", ""
+        ).strip()
+
+        context["data"] = request.POST
+
+        # Validation
+
+        if not category_name:
+            context["errors"]["category_name"] = (
+                "Category name is required."
+            )
+
+        if not slug:
+            context["errors"]["slug"] = (
+                "Slug is required."
+            )
+
+        if context["errors"]:
+            return render(
+                request,
+                "create_category.html",
+                context
+            )
 
         try:
+
             Category.objects.create(
                 category_name=category_name,
                 slug=slug
             )
+
             return redirect("category_list")
 
         except IntegrityError:
-            return render(request, "create_category.html", {
-                "error": "This category already exists."
-            })
 
-    return render(request, "create_category.html")
+            context["errors"]["category_name"] = (
+                "This category already exists."
+            )
 
+            return render(
+                request,
+                "create_category.html",
+                context
+            )
+
+    return render(
+        request,
+        "create_category.html",
+        context
+    )
 
 def product_list(request):
     products = Product.objects.all()
@@ -209,7 +254,6 @@ def create_sale(request):
 
     return render(request, "create_sale.html", context)
 
-    return render(request, "create_sale.html", context)
 def invoice(request, sale_id):
     sale = get_object_or_404(Sales, id=sale_id)
     return render(request, "invoice.html", {"sale": sale})
@@ -219,21 +263,47 @@ def edit_sale(request, sale_id):
     sale = get_object_or_404(Sales, id=sale_id)
     products = Product.objects.all()
 
+    context = {
+        "sale": sale,
+        "products": products,
+        "errors": {},
+        "data": {}
+    }
+
     if request.method == "POST":
-        product = get_object_or_404(Product, id=request.POST.get("product"))
-        quantity = int(request.POST.get("quantity"))
+
+        product_id = request.POST.get("product")
+        quantity = request.POST.get("quantity")
+
+        context["data"] = request.POST
+
+        # VALIDATION
+        if not product_id:
+            context["errors"]["product"] = "Product is required."
+
+        if not quantity:
+            context["errors"]["quantity"] = "Quantity is required."
+
+        try:
+            quantity_int = int(quantity)
+            if quantity_int <= 0:
+                context["errors"]["quantity"] = "Quantity must be greater than 0."
+        except:
+            context["errors"]["quantity"] = "Quantity must be a valid number."
+
+        if context["errors"]:
+            return render(request, "edit_sale.html", context)
+
+        product = get_object_or_404(Product, id=product_id)
 
         sale.product_name = product
-        sale.quantity = quantity
-        sale.total_price = product.unit_price * quantity
+        sale.quantity = quantity_int
+        sale.total_price = product.selling_price * quantity_int
         sale.save()
 
-        return redirect("invoice", sale_id=sale.id)
+        return redirect("home")
 
-    return render(request, "edit_sale.html", {
-        "sale": sale,
-        "products": products
-    })
+    return render(request, "edit_sale.html", context)
 
 
 @login_required
@@ -251,21 +321,43 @@ def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     categories = Category.objects.all()
 
+    context = {
+        "product": product,
+        "categories": categories,
+        "errors": {}
+    }
+
     if request.method == "POST":
-        category = get_object_or_404(Category, id=request.POST.get("category"))
+
+        category_id = request.POST.get("category")
+        product_name = request.POST.get("product_name")
+        description = request.POST.get("description")
+
+        context["data"] = request.POST
+
+        # VALIDATION
+        if not category_id:
+            context["errors"]["category"] = "Category is required."
+
+        if not product_name:
+            context["errors"]["product_name"] = "Product name is required."
+
+        if not description:
+            context["errors"]["description"] = "Description is required."
+
+        if context["errors"]:
+            return render(request, "edit_product.html", context)
+
+        category = get_object_or_404(Category, id=category_id)
 
         product.category_name = category
-        product.product_name = request.POST.get("product_name")
-        product.description = request.POST.get("description")
+        product.product_name = product_name
+        product.description = description
         product.save()
 
         return redirect("product_list")
 
-    return render(request, "edit_product.html", {
-        "product": product,
-        "categories": categories
-    })
-
+    return render(request, "edit_product.html", context)
 
 def delete_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
