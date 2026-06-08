@@ -19,7 +19,9 @@
         {% csrf_token %}
 
         <button type="submit" class="btn btn-danger">Yes, Delete</button>
-        <a href="{% url 'delete_receipt' receipt.id %}" class="btn btn-secondary">Cancel</a>
+       <a href="{% url 'stock_list' %}" class="btn btn-secondary">
+    Cancel
+</a>
     </form>
 </div>
 
